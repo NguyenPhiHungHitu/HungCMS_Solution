@@ -1,4 +1,8 @@
-﻿using System;
+﻿//Họ và tên: Nguyễn Phi Hùng
+//Mã số sinh viên: 2123110475
+//version: 1.0
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
