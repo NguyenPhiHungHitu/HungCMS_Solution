@@ -1,0 +1,49 @@
+﻿@model CMS.Data.Entities.Category
+
+@{
+    ViewData["Title"] = "Xác nhận xóa danh mục";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Cảnh Báo Xóa Dữ Liệu</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-danger fw-bold fs-5">Bạn có chắc chắn muốn xóa danh mục này không?</p>
+                    <p class="text-muted small">Lưu ý: Hành động này không thể hoàn tác sau khi thực hiện.</p>
+
+                    <hr />
+
+                    <dl class="row mb-4">
+                        <dt class="col-sm-4 fw-bold">Mã hệ thống (Id):</dt>
+                        <dd class="col-sm-8 text-danger fw-bold">@Model.Id</dd>
+
+                        <dt class="col-sm-4 fw-bold">Tên danh mục:</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4 fw-bold">Mô tả:</dt>
+                        <dd class="col-sm-8 text-secondary">@Model.Description</dd>
+                    </dl>
+
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                Không xóa, quay lại
+                            </a>
+                            <button type="submit" class="btn btn-danger px-4">
+                                Xác nhận xóa hẳn
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
