@@ -3,14 +3,17 @@
 // File: CategoryController.cs
 // NHẬT KÝ BUỔI 3: Sửa lỗi Update danh mục (ModelState.Remove), sửa lỗi Delete 404 (dùng HttpGet).
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CMS.Data;
 using CMS.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize]
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;

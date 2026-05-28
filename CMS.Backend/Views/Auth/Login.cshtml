@@ -1,0 +1,47 @@
+﻿@{
+    Layout = null; // QUAN TRỌNG: Lệnh này giúp trang Login độc lập, không dính thanh Menu bên trái
+    ViewData["Title"] = "Đăng nhập hệ thống";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body { background-color: #f4f6f9; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { width: 100%; max-width: 400px; border: none; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="card login-card">
+        <div class="card-header bg-primary text-white text-center py-3 rounded-top">
+            <h4 class="mb-0 fw-bold">ĐĂNG NHẬP CMS</h4>
+        </div>
+        <div class="card-body p-4">
+            
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger text-center fw-bold">
+                    @ViewBag.Error
+                </div>
+            }
+
+            <form asp-controller="Auth" asp-action="Login" method="post">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tên đăng nhập</label>
+                    <input type="text" name="username" class="form-control form-control-lg" required autofocus placeholder="Nhập tài khoản..." />
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Mật khẩu</label>
+                    <input type="password" name="password" class="form-control form-control-lg" required placeholder="Nhập mật khẩu..." />
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+                    VÀO HỆ THỐNG
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

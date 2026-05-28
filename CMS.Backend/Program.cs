@@ -11,6 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Kích hoạt dịch vụ Đăng nhập bằng Cookie
+builder.Services.AddAuthentication("CMSAuthCookie")
+    .AddCookie("CMSAuthCookie", options =>
+    {
+        options.Cookie.Name = "CMS_LoginCookie"; // Tên cookie lưu trên trình duyệt
+        options.LoginPath = "/Auth/Login"; // Đường dẫn bị đẩy về nếu chưa đăng nhập
+        options.AccessDeniedPath = "/Auth/AccessDenied"; // Đường dẫn báo lỗi nếu không đủ quyền (ví dụ Editor đòi vào trang của Admin)
+        options.ExpireTimeSpan = TimeSpan.FromDays(1); // Thời gian sống của Cookie là 1 ngày
+    });
+
 // Đăng ký DbContext vào hệ thống
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -30,6 +40,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication(); // <-- Bắt buộc phải nằm trên UseAuthorization
 
 app.UseAuthorization();
 

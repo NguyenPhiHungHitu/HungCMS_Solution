@@ -21,9 +21,9 @@
                         <div class="card-body">
                             <span class="badge bg-info text-dark mb-2">@(item.Category?.Name ?? "Chưa phân loại")</span>
                             <h5 class="card-title text-primary fw-bold">@item.Title</h5>
-                            <p class="card-text text-secondary">
-                                @(item.Content?.Length > 100 ? item.Content.Substring(0, 100) + "..." : item.Content)
-                            </p>
+                            <div class="card-text text-secondary mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                @Html.Raw(item.Content)
+                            </div>
                         </div>
                         <div class="card-footer bg-white border-top-0 pb-3">
                             <a asp-controller="Post" asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm w-100">Đọc tiếp</a>

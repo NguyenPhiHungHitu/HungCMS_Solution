@@ -1,11 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// ==========================================================
+// Sinh viên: Nguyễn Phi Hùng (2123110475)
+// Chức năng: Quản trị Thành viên (Phần Bổ sung Buổi 4)
+// Ghi chú: Xử lý Thêm, Sửa, Xóa tài khoản, tự động giữ mật khẩu cũ.
+// ==========================================================
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
 using CMS.Data.Entities;
-using System.Threading.Tasks;
+using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize(Roles = "Admin,Administrator")]
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -15,88 +22,85 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        // ==========================================
-        // 1. INDEX: Hiển thị danh sách người dùng
-        // ==========================================
-        public async Task<IActionResult> Index()
+        // GET: Hiển thị danh sách thành viên
+        public IActionResult Index()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = _context.Users.ToList();
             return View(users);
         }
 
-        // ==========================================
-        // 2. CREATE: Thêm người dùng mới
-        // ==========================================
+        // GET: Hiển thị form Thêm thành viên
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+        // POST: Xử lý Thêm thành viên
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(User user)
+        public IActionResult Create(User model)
         {
-            if (ModelState.IsValid)
+            // Kiểm tra xem tên đăng nhập đã tồn tại chưa
+            var checkExist = _context.Users.Any(u => u.Username == model.Username);
+            if (checkExist)
             {
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("Username", "Tên đăng nhập này đã có người dùng!");
+                return View(model);
             }
-            return View(user);
-        }
-
-        // ==========================================
-        // 3. EDIT: Sửa thông tin người dùng
-        // ==========================================
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) return NotFound();
-
-            return View(user);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, User user)
-        {
-            if (id != user.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                _context.Users.Add(model);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
             }
-            return View(user);
+            return View(model);
         }
 
-        // ==========================================
-        // 4. DELETE: Xóa người dùng
-        // ==========================================
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Hiển thị form Sửa dữ liệu cũ
+        [HttpGet]
+        public IActionResult Edit(int id)
         {
-            if (id == null) return NotFound();
-
-            var user = await _context.Users.FirstOrDefaultAsync(m => m.Id == id);
+            var user = _context.Users.Find(id);
             if (user == null) return NotFound();
-
             return View(user);
         }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        // POST: Thực hiện lưu thay đổi
+        [HttpPost]
+        public IActionResult Edit(User model, string NewPassword)
         {
-            var user = await _context.Users.FindAsync(id);
+            // 1. Tìm User gốc trong Database để lấy lại mật khẩu cũ nếu cần
+            var existingUser = _context.Users.AsNoTracking().FirstOrDefault(u => u.Id == model.Id);
+            if (existingUser == null) return NotFound();
+
+            // 2. Xử lý mật khẩu: Nếu nhập mới thì lấy cái mới, nếu trống thì lấy cái cũ
+            if (!string.IsNullOrEmpty(NewPassword))
+            {
+                model.PasswordHash = NewPassword;
+            }
+            else
+            {
+                model.PasswordHash = existingUser.PasswordHash;
+            }
+
+            // 3. Cập nhật vào Database
+            _context.Users.Update(model);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+        // Xóa thành viên trực tiếp
+        public IActionResult Delete(int id)
+        {
+            var user = _context.Users.Find(id);
             if (user != null)
             {
                 _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
     }
 }

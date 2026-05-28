@@ -1,5 +1,12 @@
-﻿@model CMS.Data.Entities.Post
-@* Họ và tên: Nguyễn Phi Hùng (2123110475) - File: Views/Post/Create.cshtml *@
+﻿
+
+@model CMS.Data.Entities.Post
+@* ==========================================================
+    Sinh viên: Nguyễn Phi Hùng (2123110475)
+    Chức năng: Giao diện Thêm bài viết mới
+    Ghi chú: Có hộp thoại báo lỗi đỏ và tích hợp CKEditor 5 cho ô Nội dung.
+========================================================== *@
+
 @{
     ViewData["Title"] = "Thêm bài viết";
 }
@@ -11,28 +18,37 @@
         </div>
         <div class="card-body">
             <form asp-action="Create" method="post">
+
+                <div asp-validation-summary="All" class="text-danger fw-bold fs-6 mb-3 border border-danger p-2 rounded bg-light" style="display:none;"></div>
+
                 <div class="row">
                     <div class="col-md-8">
                         <div class="mb-3">
                             <label asp-for="Title" class="form-label fw-bold">Tiêu đề bài viết</label>
-                            <input asp-for="Title" class="form-control" required />
+                            <input asp-for="Title" class="form-control" required placeholder="Nhập tiêu đề tại đây..." />
                         </div>
                         <div class="mb-3">
-                            <label asp-for="Content" class="form-label fw-bold">Nội dung</label>
-                            <textarea asp-for="Content" class="form-control" rows="8"></textarea>
+                            <label asp-for="Content" class="form-label fw-bold">Nội dung bài viết</label>
+                            <textarea asp-for="Content" class="form-control" rows="12"></textarea>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="mb-3">
                             <label asp-for="CategoryId" class="form-label fw-bold">Thuộc Danh mục</label>
                             <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
                         </div>
+
                         <div class="mb-3">
-                            <label asp-for="ImageUrl" class="form-label fw-bold">Link Hình ảnh (URL)</label>
-                            <input asp-for="ImageUrl" class="form-control" placeholder="Dán link ảnh vào đây..." />
+                            <label asp-for="ImageUrl" class="form-label fw-bold">Đường dẫn hình ảnh (URL)</label>
+                            <input asp-for="ImageUrl" class="form-control" placeholder="Ví dụ: /img/run.jpg hoặc dán link trên mạng..." />
+                            <div class="form-text text-muted">Có thể dán link ảnh trên internet hoặc đường dẫn ảnh tĩnh trong project. Để trống nếu không có ảnh.</div>
                         </div>
+
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-success w-100 mb-2">Đăng bài viết</button>
+                            <button type="submit" class="btn btn-success w-100 mb-2 fw-bold">
+                                <i class="bi bi-plus-circle"></i> Đăng bài viết
+                            </button>
                             <a asp-action="Index" class="btn btn-outline-secondary w-100">Hủy bỏ</a>
                         </div>
                     </div>
@@ -41,3 +57,17 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor.create(document.querySelector('#Content')).catch(error => { console.error(error); });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var validationSummary = document.querySelector("[asp-validation-summary]");
+            if (validationSummary && validationSummary.innerText.trim() !== "") {
+                validationSummary.style.display = "block";
+            }
+        });
+    </script>
+}

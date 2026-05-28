@@ -1,5 +1,11 @@
 ﻿@model CMS.Data.Entities.Post
-@* Họ và tên: Nguyễn Phi Hùng (2123110475) - File: Views/Post/Edit.cshtml *@
+
+@* ==========================================================
+    Tên sinh viên: Nguyễn Phi Hùng (2123110475)
+    File: Views/Post/Edit.cshtml
+    NHẬT KÝ THỰC HÀNH: Giao diện Sửa bài viết (Sử dụng text ImageUrl)
+========================================================== *@
+
 @{
     ViewData["Title"] = "Sửa bài viết";
 }
@@ -15,6 +21,8 @@
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="CreatedDate" />
 
+                <div asp-validation-summary="All" class="text-danger fw-bold fs-6 mb-3 border border-danger p-2 rounded bg-light" style="display:none;"></div>
+
                 <div class="row">
                     <div class="col-md-8">
                         <div class="mb-3">
@@ -23,7 +31,7 @@
                         </div>
                         <div class="mb-3">
                             <label asp-for="Content" class="form-label fw-bold">Nội dung</label>
-                            <textarea asp-for="Content" class="form-control" rows="8"></textarea>
+                            <textarea asp-for="Content" class="form-control" rows="12"></textarea>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -31,10 +39,12 @@
                             <label asp-for="CategoryId" class="form-label fw-bold">Thuộc Danh mục</label>
                             <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
                         </div>
+
                         <div class="mb-3">
-                            <label asp-for="ImageUrl" class="form-label fw-bold">Link Hình ảnh (URL)</label>
+                            <label asp-for="ImageUrl" class="form-label fw-bold">Đường dẫn hình ảnh (URL)</label>
                             <input asp-for="ImageUrl" class="form-control" />
                         </div>
+
                         <div class="mt-4">
                             <button type="submit" class="btn btn-warning w-100 fw-bold mb-2">Cập nhật thay đổi</button>
                             <a asp-action="Index" class="btn btn-outline-secondary w-100">Hủy bỏ</a>
@@ -45,3 +55,17 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor.create(document.querySelector('#Content')).catch(error => { console.error(error); });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var validationSummary = document.querySelector("[asp-validation-summary]");
+            if (validationSummary && validationSummary.innerText.trim() !== "") {
+                validationSummary.style.display = "block";
+            }
+        });
+    </script>
+}

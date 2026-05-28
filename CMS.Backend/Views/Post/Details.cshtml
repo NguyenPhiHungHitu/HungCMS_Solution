@@ -21,7 +21,9 @@
                 </div>
             }
 
-            <div class="fs-5" style="white-space: pre-line;">@Model.Content</div>
+            <div class="fs-5" style="white-space: pre-line;">
+                @Html.Raw(Model.Content)
+            </div>
 
             <div class="mt-5 border-top pt-3 mb-5">
                 <a href="/Post" class="btn btn-secondary">Quay lại danh sách</a>
