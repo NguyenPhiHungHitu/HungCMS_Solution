@@ -1,32 +1,27 @@
-using CMS.Backend.Models;
+﻿// Họ và tên: Nguyễn Phi Hùng
+// Mã số sinh viên: 2123110475
+// File: HomeController.cs
+// NHẬT KÝ BUỔI 3: Lấy 3 bài mới nhất ra trang chủ.
+
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using CMS.Data;
+using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ApplicationDbContext _context;
+        public HomeController(ApplicationDbContext context) { _context = context; }
 
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var latestPosts = _context.Posts
+                .Include(p => p.Category)
+                .OrderByDescending(p => p.CreatedDate)
+                .Take(3).ToList();
+            return View(latestPosts);
         }
     }
 }

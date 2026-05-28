@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// Họ và tên: Nguyễn Phi Hùng
+// Mã số sinh viên: 2123110475
+// File: PostController.cs
+// NHẬT KÝ BUỔI 3: Thêm LINQ (Include, Where, OrderByDescending), hàm Details, sửa ModelState.
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
@@ -17,18 +22,25 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        // ==========================================
-        // 1. INDEX: Danh sách bài viết
-        // ==========================================
-        public async Task<IActionResult> Index()
+        // 1. INDEX: Lọc theo danh mục và sắp xếp mới nhất
+        public async Task<IActionResult> Index(int? id)
         {
-            var posts = _context.Posts.Include(p => p.Category);
-            return View(await posts.ToListAsync());
+            var query = _context.Posts.Include(p => p.Category).AsQueryable();
+            if (id.HasValue) query = query.Where(p => p.CategoryId == id.Value);
+            query = query.OrderByDescending(p => p.CreatedDate);
+            return View(await query.ToListAsync());
         }
 
-        // ==========================================
-        // 2. CREATE: Thêm bài viết mới
-        // ==========================================
+        // 2. DETAILS: Xem chi tiết
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+            var post = await _context.Posts.Include(p => p.Category).FirstOrDefaultAsync(m => m.Id == id);
+            if (post == null) return NotFound();
+            return View(post);
+        }
+
+        // 3. CREATE
         public IActionResult Create()
         {
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
@@ -39,33 +51,23 @@ namespace CMS.Backend.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Post post)
         {
-            // BỎ QUA KIỂM TRA LỖI cho thuộc tính Category và ImageUrl (nếu form không gửi lên)
-            ModelState.Remove("Category");
-
-            // Tùy chọn: Nếu ImageUrl không bắt buộc nhập, bỏ qua luôn lỗi của nó
-            // ModelState.Remove("ImageUrl"); 
-
+            ModelState.Remove("Category"); // Bỏ qua lỗi khóa ngoại
             if (ModelState.IsValid)
             {
                 _context.Posts.Add(post);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", post.CategoryId);
             return View(post);
         }
 
-        // ==========================================
-        // 3. EDIT: Sửa bài viết
-        // ==========================================
+        // 4. EDIT
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
-
             var post = await _context.Posts.FindAsync(id);
             if (post == null) return NotFound();
-
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", post.CategoryId);
             return View(post);
         }
@@ -75,10 +77,7 @@ namespace CMS.Backend.Controllers
         public async Task<IActionResult> Edit(int id, Post post)
         {
             if (id != post.Id) return NotFound();
-
-            // BỎ QUA KIỂM TRA LỖI cho thuộc tính Category
-            ModelState.Remove("Category");
-
+            ModelState.Remove("Category"); // Bỏ qua lỗi khóa ngoại
             if (ModelState.IsValid)
             {
                 _context.Posts.Update(post);
@@ -89,19 +88,12 @@ namespace CMS.Backend.Controllers
             return View(post);
         }
 
-        // ==========================================
-        // 4. DELETE: Xóa bài viết
-        // ==========================================
+        // 5. DELETE
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
-
-            var post = await _context.Posts
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
+            var post = await _context.Posts.Include(p => p.Category).FirstOrDefaultAsync(m => m.Id == id);
             if (post == null) return NotFound();
-
             return View(post);
         }
 

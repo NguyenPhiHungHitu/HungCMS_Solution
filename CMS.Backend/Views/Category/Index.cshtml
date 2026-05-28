@@ -1,58 +1,37 @@
 ﻿@model IEnumerable<CMS.Data.Entities.Category>
-
+@* Họ và tên: Nguyễn Phi Hùng (2123110475) - File: Views/Category/Index.cshtml *@
 @{
     ViewData["Title"] = "Quản lý Danh mục";
 }
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary fw-bold">Quản Lý Danh Mục Bài Viết</h2>
-        <a asp-action="Create" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Thêm danh mục mới
-        </a>
+        <h2 class="text-primary fw-bold">Quản Lý Danh Mục</h2>
+        <a asp-action="Create" class="btn btn-success">Thêm danh mục mới</a>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <table class="table table-hover table-striped mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th style="width: 10%;" class="ps-3">Mã (Id)</th>
-                        <th style="width: 30%;">Tên danh mục</th>
-                        <th style="width: 40%;">Mô tả chi tiết</th>
-                        <th style="width: 20%;" class="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var item in Model)
-                        {
-                            <tr>
-                                <td class="fw-bold ps-3">@item.Id</td>
-                                <td>@item.Name</td>
-                                <td class="text-secondary">@item.Description</td>
-                                <td class="text-center">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm me-1">
-                                        Sửa
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                        Xóa
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="4" class="text-center text-muted py-4">
-                                Chưa có danh mục nào trong cơ sở dữ liệu. Vui lòng bấm thêm mới!
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <table class="table table-hover table-striped shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Id</th>
+                <th>Tên danh mục</th>
+                <th>Mô tả</th>
+                <th class="text-center">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="align-middle fw-bold">@item.Id</td>
+                    <td class="align-middle fw-bold text-info">@item.Name</td>
+                    <td class="align-middle">@item.Description</td>
+                    <td class="align-middle text-center">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Sửa</a>
+                        <a href="/Category/Delete/@item.Id" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');" class="btn btn-danger btn-sm">Xóa</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>

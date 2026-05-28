@@ -1,0 +1,43 @@
+﻿@model CMS.Data.Entities.Post
+@* Họ và tên: Nguyễn Phi Hùng (2123110475) - File: Views/Post/Create.cshtml *@
+@{
+    ViewData["Title"] = "Thêm bài viết";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0 fw-bold">Thêm Bài Viết Mới</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-bold">Tiêu đề bài viết</label>
+                            <input asp-for="Title" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Content" class="form-label fw-bold">Nội dung</label>
+                            <textarea asp-for="Content" class="form-control" rows="8"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="CategoryId" class="form-label fw-bold">Thuộc Danh mục</label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="ImageUrl" class="form-label fw-bold">Link Hình ảnh (URL)</label>
+                            <input asp-for="ImageUrl" class="form-control" placeholder="Dán link ảnh vào đây..." />
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-success w-100 mb-2">Đăng bài viết</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary w-100">Hủy bỏ</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

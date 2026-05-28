@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<CMS.Data.Entities.Post>
-
+@* Họ và tên: Nguyễn Phi Hùng (2123110475) - File: Views/Post/Index.cshtml *@
 @{
     ViewData["Title"] = "Quản lý Bài viết";
 }
@@ -7,71 +7,65 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-primary fw-bold">Quản Lý Danh Sách Bài Viết</h2>
-        <a asp-action="Create" class="btn btn-success">
-            Thêm bài viết mới
-        </a>
-    </div>
-
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <table class="table table-hover table-striped mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th style="width: 5%;" class="ps-3">Id</th>
-                        <th style="width: 15%;">Hình ảnh</th>
-                        <th style="width: 30%;">Tiêu đề</th>
-                        <th style="width: 15%;">Danh mục</th>
-                        <th style="width: 15%;">Ngày tạo</th>
-                        <th style="width: 20%;" class="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var item in Model)
-                        {
-                            <tr>
-                                <td class="fw-bold align-middle ps-3">@item.Id</td>
-                                <td class="align-middle">
-                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
-                                    {
-                                        <img src="@item.ImageUrl" alt="Ảnh đại diện" class="img-thumbnail" style="max-width: 70px; max-height: 50px; object-fit: cover;" />
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted small italic">Không có ảnh</span>
-                                    }
-                                </td>
-                                <td class="align-middle fw-bold text-dark">@item.Title</td>
-                                <td class="align-middle">
-                                    <span class="badge bg-info text-dark fw-bold">
-                                        @(item.Category != null ? item.Category.Name : "Chưa phân loại")
-                                    </span>
-                                </td>
-                                <td class="align-middle text-secondary small">
-                                    @item.CreatedDate.ToString("dd/MM/yyyy HH:mm")
-                                </td>
-                                <td class="text-center align-middle">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm me-1">
-                                        Sửa
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">
-                                        Xóa
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
-                                Chưa có bài viết nào trong cơ sở dữ liệu. Vui lòng bấm thêm mới!
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div>
+            @if (Context.Request.RouteValues["id"] != null)
+            {
+                <a href="/Post" class="btn btn-outline-secondary me-2">Xem tất cả</a>
+            }
+            <a asp-action="Create" class="btn btn-success">Thêm bài mới</a>
         </div>
     </div>
+
+    <table class="table table-hover table-striped shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Id</th>
+                <th>Hình ảnh</th>
+                <th>Tiêu đề</th>
+                <th>Danh mục</th>
+                <th>Ngày tạo</th>
+                <th class="text-center">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="align-middle fw-bold">@item.Id</td>
+                        <td class="align-middle">
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" style="max-height: 50px;" />
+                            }
+                            else
+                            {
+
+                                <span class="text-muted small">Không ảnh</span>
+                            }
+                        </td>
+                        <td class="align-middle fw-bold">@item.Title</td>
+                        <td class="align-middle">
+                            @if (item.Category != null)
+                            {
+                                <a asp-action="Index" asp-route-id="@item.CategoryId" class="badge bg-info text-dark text-decoration-none">@item.Category.Name</a>
+                            }
+                            else
+                            {
+
+                                <span class="badge bg-secondary">Chưa phân loại</span>
+                            }
+                        </td>
+                        <td class="align-middle">@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="align-middle text-center">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm text-white">Xem</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Sửa</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Xóa</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 </div>

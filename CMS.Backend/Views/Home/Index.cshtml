@@ -1,8 +1,36 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<CMS.Data.Entities.Post>
+@* Họ và tên: Nguyễn Phi Hùng (2123110475) - File: Views/Home/Index.cshtml *@
+@{
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Nguyễn Phi Hùng_2123110475</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <h2 class="text-center text-primary fw-bold mb-5">Bài Viết Mới Nhất</h2>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" class="card-img-top" style="height: 200px; object-fit: cover;" />
+                        }
+
+                        <div class="card-body">
+                            <span class="badge bg-info text-dark mb-2">@(item.Category?.Name ?? "Chưa phân loại")</span>
+                            <h5 class="card-title text-primary fw-bold">@item.Title</h5>
+                            <p class="card-text text-secondary">
+                                @(item.Content?.Length > 100 ? item.Content.Substring(0, 100) + "..." : item.Content)
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 pb-3">
+                            <a asp-controller="Post" asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm w-100">Đọc tiếp</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
 </div>

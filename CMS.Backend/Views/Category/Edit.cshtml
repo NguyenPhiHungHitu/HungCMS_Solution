@@ -1,7 +1,7 @@
 ﻿@model CMS.Data.Entities.Category
-
+@* Họ và tên: Nguyễn Phi Hùng (2123110475) - File: Views/Category/Edit.cshtml *@
 @{
-    ViewData["Title"] = "Chỉnh sửa danh mục";
+    ViewData["Title"] = "Sửa danh mục";
 }
 
 <div class="container mt-4">
@@ -9,35 +9,24 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-warning text-dark">
-                    <h4 class="mb-0 fw-bold">Chỉnh Sửa Danh Mục</h4>
+                    <h4 class="mb-0 fw-bold">Sửa Danh Mục</h4>
                 </div>
                 <div class="card-body">
                     <form asp-action="Edit" method="post">
                         @Html.AntiForgeryToken()
-
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
                         <input type="hidden" asp-for="Id" />
 
                         <div class="mb-3">
                             <label asp-for="Name" class="form-label fw-bold">Tên danh mục</label>
                             <input asp-for="Name" class="form-control" required />
-                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
-
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label fw-bold">Mô tả chi tiết</label>
-                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <label asp-for="Description" class="form-label fw-bold">Mô tả</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                         </div>
-
                         <div class="d-flex justify-content-between pt-2">
-                            <a asp-action="Index" class="btn btn-outline-secondary">
-                                Hủy bỏ
-                            </a>
-                            <button type="submit" class="btn btn-warning px-4 fw-bold">
-                                Cập nhật
-                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-warning fw-bold">Cập nhật</button>
                         </div>
                     </form>
                 </div>

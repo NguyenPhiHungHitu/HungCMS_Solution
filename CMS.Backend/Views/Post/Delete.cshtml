@@ -1,0 +1,70 @@
+﻿@model CMS.Data.Entities.Post
+
+@* ==========================================================
+    Tên sinh viên: Nguyễn Phi Hùng (2123110475)
+    File: Views/Post/Delete.cshtml
+    
+    NHẬT KÝ THỰC HÀNH - Buổi 3:
+    - Xây dựng giao diện xác nhận xóa bài viết.
+    - Hiển thị thông tin chi tiết (kèm Join danh mục) để người dùng kiểm tra trước khi xóa.
+========================================================== *@
+
+@{
+    ViewData["Title"] = "Xóa bài viết";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0 fw-bold">Xác Nhận Xóa Bài Viết</h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="alert alert-warning mb-4">
+                        <strong>Cảnh báo:</strong> Bạn có chắc chắn muốn xóa bài viết dưới đây không? Hành động này sẽ xóa dữ liệu vĩnh viễn khỏi hệ thống!
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <h4 class="text-primary fw-bold">@Model.Title</h4>
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-calendar3"></i> Ngày đăng: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+                            <p>
+                                <i class="bi bi-folder"></i> Danh mục:
+                                <span class="badge bg-info text-dark">
+                                    @(Model.Category != null ? Model.Category.Name : "Chưa phân loại")
+                                </span>
+                            </p>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <div class="col-md-4 text-center">
+                                <img src="@Model.ImageUrl" alt="Hình thu nhỏ" class="img-thumbnail shadow-sm" style="max-height: 120px; object-fit: cover;" />
+                            </div>
+                        }
+                    </div>
+
+                    <hr />
+
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                Quay lại danh sách
+                            </a>
+                            <button type="submit" class="btn btn-danger fw-bold px-4">
+                                Vâng, Xóa bài viết này!
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

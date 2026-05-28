@@ -1,31 +1,30 @@
 ﻿@model CMS.Data.Entities.Post
+@* Họ và tên: Nguyễn Phi Hùng (2123110475) - File: Views/Post/Details.cshtml *@
+@{
+    ViewData["Title"] = Model.Title;
+}
 
 <div class="container mt-5">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/Post">Danh sách bài viết</a></li>
-            <li class="breadcrumb-item active">Chi tiết bài viết</li>
-        </ol>
-    </nav>
-
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <h1 class="display-4 fw-bold text-primary">@Model.Title</h1>
-            <p class="text-muted">Đăng ngày: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</p>
-            <hr />
+            <h1 class="display-4 fw-bold text-primary mb-3">@Model.Title</h1>
 
-            <div class="text-center mb-4">
-                <img src="@Model.ImageUrl" class="img-fluid rounded shadow" alt="Post Image" style="width: 100%;">
+            <div class="mb-4 text-muted">
+                <span>Đăng ngày: @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span> |
+                <span class="badge bg-info text-dark">@(Model.Category?.Name ?? "Chưa phân loại")</span>
             </div>
 
-            <div class="post-content fs-5 leading-lg">
-                @Model.Content
-            </div>
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="text-center mb-4">
+                    <img src="@Model.ImageUrl" class="img-fluid rounded" style="max-height: 500px; width: 100%; object-fit: cover;">
+                </div>
+            }
 
-            <div class="mt-5 border-top pt-3">
-                <a href="/Post" class="btn btn-secondary">
-                    <i class="bi bi-arrow-left"></i> Quay lại danh sách
-                </a>
+            <div class="fs-5" style="white-space: pre-line;">@Model.Content</div>
+
+            <div class="mt-5 border-top pt-3 mb-5">
+                <a href="/Post" class="btn btn-secondary">Quay lại danh sách</a>
             </div>
         </div>
     </div>
