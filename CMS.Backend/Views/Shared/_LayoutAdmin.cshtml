@@ -1,7 +1,7 @@
 ﻿@* ==========================================================
     Sinh viên: Nguyễn Phi Hùng (2123110475)
     File: Views/Shared/_LayoutAdmin.cshtml
-    Chức năng: Khung giao diện Quản trị hoàn chỉnh (Buổi 5 - Ẩn Menu theo Quyền)
+    Chức năng: Khung giao diện Quản trị hoàn chỉnh (Buổi 5 - Tích hợp nút Đăng nhập ẩn danh)
 ========================================================== *@
 <!DOCTYPE html>
 <html lang="en">
@@ -65,16 +65,30 @@
                         </a>
                     </div>
                 }
+                else
+                {
+                    <div class="p-3 border-bottom border-secondary text-center bg-black bg-opacity-25">
+                        <div class="small text-light bg-opacity-10 mb-2">Bạn chưa đăng nhập</div>
+                        <a asp-controller="Auth" asp-action="Login" class="btn btn-sm btn-primary w-100 fw-bold">
+                            <i class="bi bi-box-arrow-in-right"></i> ĐĂNG NHẬP
+                        </a>
+                    </div>
+                }
 
                 <div class="mt-3">
                     <a asp-controller="Home" asp-action="Index"><i class="bi bi-house me-2"></i> Xem Website</a>
-                    <a asp-controller="Category" asp-action="Index"><i class="bi bi-tags me-2"></i> Quản lý Danh mục</a>
-                    <a asp-controller="Post" asp-action="Index"><i class="bi bi-file-text me-2"></i> Quản lý Bài viết</a>
 
-                    @* Nếu vai trò đăng nhập là Admin hoặc Administrator thì mới hiện nút này *@
-                    @if (User.IsInRole("Admin") || User.IsInRole("Administrator"))
+                    @* Chỉ hiện các menu này khi đã đăng nhập thành công *@
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
-                        <a asp-controller="User" asp-action="Index"><i class="bi bi-people me-2"></i> Quản lý Thành viên</a>
+                        <a asp-controller="Category" asp-action="Index"><i class="bi bi-tags me-2"></i> Quản lý Danh mục</a>
+                        <a asp-controller="Post" asp-action="Index"><i class="bi bi-file-text me-2"></i> Quản lý Bài viết</a>
+
+                        @* Chỉ Admin mới nhìn thấy menu Quản lý Thành viên *@
+                        @if (User.IsInRole("Admin") || User.IsInRole("Administrator"))
+                        {
+                            <a asp-controller="User" asp-action="Index"><i class="bi bi-people me-2"></i> Quản lý Thành viên</a>
+                        }
                     }
                 </div>
             </nav>

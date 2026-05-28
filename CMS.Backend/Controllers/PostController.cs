@@ -43,6 +43,7 @@ namespace CMS.Backend.Controllers
         }
 
         // GET: Xem chi tiết bài viết
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();

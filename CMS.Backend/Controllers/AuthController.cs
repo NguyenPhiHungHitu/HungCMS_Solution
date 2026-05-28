@@ -71,11 +71,14 @@ namespace CMS.Backend.Controllers
         }
 
         // GET: Xử lý Đăng xuất
+        // GET: Xử lý Đăng xuất
         public async Task<IActionResult> Logout()
         {
-            // Hủy thẻ Cookie
+            // 1. Xóa sạch thẻ Cookie đăng nhập trên trình duyệt để thoát phiên làm việc
             await HttpContext.SignOutAsync("CMSAuthCookie");
-            return RedirectToAction("Login", "Auth");
+
+            // 2. SỬA DÒNG NÀY: Thay vì về "Login" của Auth, mình chuyển hướng về trang chủ công khai
+            return RedirectToAction("Index", "Home");
         }
     }
 }
