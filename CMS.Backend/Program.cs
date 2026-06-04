@@ -1,38 +1,71 @@
-﻿
-//Họ và tên: Nguyễn Phi Hùng
+﻿//Họ và tên: Nguyễn Phi Hùng
 //Mã số sinh viên: 2123110475
 //version: 1.0
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// =======================================================
+// PHẦN 1: ĐĂNG KÝ DỊCH VỤ (SERVICES)
+// *Bắt buộc phải nằm TRÊN lệnh builder.Build()*
+// =======================================================
 
-// Kích hoạt dịch vụ Đăng nhập bằng Cookie
+// Fix lỗi vòng lặp khi sinh dữ liệu JSON (Buổi 6)
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
+// Cấu hình Swagger (Buổi 6)
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// 🌟 THÊM MỚI BƯỚC NÀY: Mở cổng CORS cấp quyền cho Frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontendApp", policy =>
+    {
+        policy.AllowAnyOrigin()  // Cho phép mọi domain truy cập (Khi thực tế có thể đổi thành http://localhost:3000)
+              .AllowAnyHeader()  // Cho phép mọi loại dữ liệu gửi lên
+              .AllowAnyMethod(); // Cho phép mọi thao tác GET, POST, PUT, DELETE
+    });
+});
+
+// Kích hoạt dịch vụ Đăng nhập bằng Cookie (Buổi 5)
 builder.Services.AddAuthentication("CMSAuthCookie")
     .AddCookie("CMSAuthCookie", options =>
     {
         options.Cookie.Name = "CMS_LoginCookie"; // Tên cookie lưu trên trình duyệt
         options.LoginPath = "/Auth/Login"; // Đường dẫn bị đẩy về nếu chưa đăng nhập
-        options.AccessDeniedPath = "/Auth/AccessDenied"; // Đường dẫn báo lỗi nếu không đủ quyền (ví dụ Editor đòi vào trang của Admin)
+        options.AccessDeniedPath = "/Auth/AccessDenied"; // Đường dẫn báo lỗi nếu không đủ quyền
         options.ExpireTimeSpan = TimeSpan.FromDays(1); // Thời gian sống của Cookie là 1 ngày
     });
 
-// Đăng ký DbContext vào hệ thống
+// Đăng ký DbContext vào hệ thống kết nối SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-var app = builder.Build();
+// =======================================================
+// PHẦN 2: BUILD APP VÀ CẤU HÌNH LUỒNG CHẠY (MIDDLEWARE)
+// =======================================================
+var app = builder.Build(); // CHỈ GỌI 1 LẦN DUY NHẤT Ở ĐÂY
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+// Cấu hình Middleware Swagger (Chỉ hiển thị khi đang code)
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "CMS Web API v1");
+        c.RoutePrefix = "swagger"; // Đường dẫn truy cập sẽ là /swagger
+    });
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -41,12 +74,18 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // <-- Bắt buộc phải nằm trên UseAuthorization
+// 🌟 THÊM MỚI BƯỚC NÀY: Kích hoạt bảo vệ CORS
+app.UseCors("AllowFrontendApp");
 
+app.UseAuthentication(); // <-- Bắt buộc phải nằm trên UseAuthorization
 app.UseAuthorization();
 
+// Ánh xạ luồng chạy cho các file API Controller (Buổi 6)
+app.MapControllers();
+
+// Ánh xạ luồng chạy cho các file MVC Controller (Trang web)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+app.Run(); // Lệnh chạy web, cũng chỉ gọi 1 lần duy nhất ở cuối cùng
