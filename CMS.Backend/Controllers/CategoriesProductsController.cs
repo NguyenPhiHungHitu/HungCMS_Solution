@@ -1,44 +1,98 @@
-﻿// ==========================================================
-// Sinh viên: Nguyễn Phi Hùng (2123110475)
-// BÀI TẬP THỰC HÀNH MỞ RỘNG (NÂNG CAO) – BUỔI 6
-// Chức năng: API Danh mục sản phẩm (CategoryProduct)
-// ==========================================================
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
+using CMS.Data.Entities;
 using System.Threading.Tasks;
 using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
-    // 1. Cấu hình định tuyến API
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CategoriesProductsController : ControllerBase
+    public class CategoriesProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        // 2. Tiêm ngữ cảnh dữ liệu (Constructor Injection)
         public CategoriesProductsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // 3. Phương thức GET: Kéo toàn bộ danh sách phân loại
-        // Đường dẫn test: https://localhost:xxxx/api/CategoriesProducts
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        // 1. Danh sách
+        public async Task<IActionResult> Index()
         {
-            // Gọt dữ liệu: Chỉ lấy các thông tin cốt lõi để tối ưu JSON (bỏ qua liên kết rườm rà)
-            var categories = await _context.CategoriesProducts
-                .Select(c => new {
-                    c.Id,
-                    c.Name,
-                    c.Description
-                })
-                .ToListAsync();
+            return View(await _context.CategoriesProducts.ToListAsync());
+        }
 
-            return Ok(categories);
+        // 2. Thêm mới
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Name,Description")] CategoryProduct category)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(category);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(category);
+        }
+
+        // 3. Sửa
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+            var category = await _context.CategoriesProducts.FindAsync(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] CategoryProduct category)
+        {
+            if (id != category.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(category);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.CategoriesProducts.Any(e => e.Id == category.Id)) return NotFound();
+                    else throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(category);
+        }
+
+        // 4. Xóa
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+            var category = await _context.CategoriesProducts.FirstOrDefaultAsync(m => m.Id == id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var category = await _context.CategoriesProducts.FindAsync(id);
+            if (category != null)
+            {
+                _context.CategoriesProducts.Remove(category);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }

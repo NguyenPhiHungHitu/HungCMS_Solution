@@ -1,20 +1,16 @@
-﻿// ==========================================================
-// Sinh viên: Nguyễn Phi Hùng (2123110475)
-// Bài tập Nâng cao 3: API Quản lý Đơn hàng (Orders)
-// ==========================================================
+﻿// File: Controllers/OrdersController.cs
+// Chức năng: Quản lý Đơn hàng trên giao diện Admin
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
-using CMS.Data.Entities;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class OrdersController : ControllerBase
+    [ApiExplorerSettings(IgnoreApi = true)]
+    // ❌ KHÔNG dùng [ApiController] và [Route] ở đây
+    public class OrdersController : Controller // Kế thừa Controller cho Admin
     {
         private readonly ApplicationDbContext _context;
 
@@ -23,20 +19,44 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        // Nhận đơn đặt hàng từ Frontend
-        [HttpPost("checkout")]
-        public async Task<IActionResult> CreateOrder([FromBody] Order order)
+        // 1. Hiển thị danh sách toàn bộ Đơn hàng
+        public async Task<IActionResult> Index()
         {
-            if (order == null || order.CustomerId <= 0)
-                return BadRequest(new { message = "Dữ liệu đơn hàng không hợp lệ!" });
+            var orders = await _context.Orders
+                .Include(o => o.Customer)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
 
-            order.OrderDate = DateTime.Now;
-            order.Status = 0; // 0: Chờ duyệt
+            return View(orders);
+        }
 
-            _context.Orders.Add(order);
+        // 2. Hiển thị Chi tiết một Đơn hàng
+        public async Task<IActionResult> Details(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails!)
+                    .ThenInclude(od => od.Product)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (order == null) return NotFound("Không tìm thấy đơn hàng này.");
+
+            return View(order);
+        }
+
+        // 3. Xử lý Cập nhật trạng thái
+        // 3. Xử lý thao tác Cập nhật trạng thái từ form ở trang Chi tiết
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(int id, int status)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) return NotFound();
+
+            order.Status = status;
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Đặt hàng thành công!", orderId = order.Id });
+            // 🌟 ĐÃ SỬA: Thay vì quay lại trang Details(id), ta cho quay thẳng ra trang Index (Danh sách)
+            return RedirectToAction(nameof(Index));
         }
     }
 }

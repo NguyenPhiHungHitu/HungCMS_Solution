@@ -1,18 +1,16 @@
-﻿// ==========================================================
-// Sinh viên: Nguyễn Phi Hùng (2123110475)
-// Bài tập Nâng cao 2: API Quản lý Khách hàng (Customers)
-// ==========================================================
+﻿// File: Controllers/CustomersController.cs
+// Chức năng: Quản lý Khách hàng trên giao diện Admin
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CMS.Data;
-using CMS.Data.Entities;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CustomersController : ControllerBase
+    [ApiExplorerSettings(IgnoreApi = true)]
+    // ❌ KHÔNG dùng [ApiController] hay [Route] ở đây
+    public class CustomersController : Controller
     {
         private readonly ApplicationDbContext _context;
 
@@ -21,17 +19,16 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        // Đăng ký tài khoản từ Frontend
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterCustomer([FromBody] Customer customer)
+        // Hiển thị danh sách khách hàng
+        public async Task<IActionResult> Index()
         {
-            var checkExist = await _context.Customers.AnyAsync(c => c.Email == customer.Email);
-            if (checkExist) return BadRequest(new { message = "Email này đã được sử dụng!" });
+            // Lấy danh sách khách hàng và kèm theo thông tin các đơn hàng họ đã đặt
+            var customers = await _context.Customers
+                .Include(c => c.Orders)
+                .OrderByDescending(c => c.Id)
+                .ToListAsync();
 
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Đăng ký thành công!", customerId = customer.Id });
+            return View(customers);
         }
     }
 }

@@ -1,0 +1,34 @@
+﻿@model CMS.Data.Entities.CategoryProduct
+
+@{
+    ViewData["Title"] = "Xác nhận xóa Danh mục Sản phẩm";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="mb-4">
+    <h2 class="fw-bold text-danger"><i class="bi bi-exclamation-triangle"></i> CẢNH BÁO XÓA DANH MỤC</h2>
+</div>
+
+<div class="card shadow border-0 col-md-6 border-start border-danger border-4">
+    <div class="card-body p-4">
+        <h5 class="text-dark mb-4">Bạn có chắc chắn muốn xóa danh mục sản phẩm dưới đây không? Hành động này không thể hoàn tác.</h5>
+
+        <table class="table table-bordered align-middle">
+            <tr>
+                <th class="bg-light" style="width: 35%;">Tên danh mục</th>
+                <td class="fw-bold text-primary">@Model.Name</td>
+            </tr>
+            <tr>
+                <th class="bg-light">Mô tả chi tiết</th>
+                <td class="text-muted">@Model.Description</td>
+            </tr>
+        </table>
+
+        <form asp-action="Delete" class="mt-4">
+            <input type="hidden" asp-for="Id" />
+
+            <button type="submit" class="btn btn-danger fw-bold px-4"><i class="bi bi-trash"></i> Đồng ý xóa hẳn</button>
+            <a asp-action="Index" class="btn btn-outline-secondary px-4 ms-2">Không, quay lại</a>
+        </form>
+    </div>
+</div>

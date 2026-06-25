@@ -1,0 +1,49 @@
+
+[17/06/2026 10:08:14 CH] --- CREATE POST ---
+File selected: iphone-14-pro-max-co-nhung-mau-gi-2.jpg, size: 121989 bytes
+Target folder: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\posts
+File path: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\posts\4f104c32-ecc6-4f66-b499-c8b84f45bc0a.jpg
+Copying file to stream...
+File copied successfully
+Saving changes to database...
+Post saved successfully!
+[17/06/2026 10:09:16 CH] --- CREATE PRODUCT ---
+File selected: iphone-14-pro-max-co-nhung-mau-gi-2.jpg, size: 121989 bytes
+Target folder: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\products
+File path: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\products\f8989513-41b8-4057-9d5c-c18bb7903152.jpg
+Copying file to stream...
+File copied successfully
+Saving changes to database...
+Product saved successfully!
+[17/06/2026 10:17:20 CH] --- CREATE POST ---
+File selected: iphone-14-pro-max-co-nhung-mau-gi-2.jpg, size: 121989 bytes
+Target folder: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\posts
+File path: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\posts\eed09ba7-39b3-4fe2-9410-7cdfb8767ac1.jpg
+Copying file to stream...
+File copied successfully
+Saving changes to database...
+Post saved successfully!
+[17/06/2026 10:19:02 CH] --- CREATE POST ---
+No file selected, using default
+Saving changes to database...
+Post saved successfully!
+[17/06/2026 10:20:53 CH] --- CREATE PRODUCT ---
+File selected: iphone-14-pro-max-co-nhung-mau-gi-2.jpg, size: 121989 bytes
+Target folder: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\products
+File path: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\products\c39618d3-24ff-4d32-ab38-f1cfa762f3b8.jpg
+Copying file to stream...
+File copied successfully
+Saving changes to database...
+Product saved successfully!
+[17/06/2026 10:24:47 CH] --- CREATE PRODUCT ---
+No file selected, using default
+Saving changes to database...
+Product saved successfully!
+[17/06/2026 10:33:13 CH] --- CREATE POST ---
+File selected: vot-cau-long-lining-halbertec-9000-chinh-hang_2.jpg, size: 134539 bytes
+Target folder: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\posts
+File path: C:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\posts\5d794703-6265-4da5-abd6-f534aeca0daf.jpg
+Copying file to stream...
+File copied successfully
+Saving changes to database...
+Post saved successfully!

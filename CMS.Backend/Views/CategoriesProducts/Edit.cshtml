@@ -1,0 +1,36 @@
+﻿@model CMS.Data.Entities.CategoryProduct
+
+@{
+    ViewData["Title"] = "Cập nhật Danh mục Sản phẩm";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="mb-4">
+    <h2 class="fw-bold text-secondary"><i class="bi bi-pencil-square"></i> CẬP NHẬT DANH MỤC SẢN PHẨM</h2>
+</div>
+
+<div class="card shadow border-0 col-md-6">
+    <div class="card-body p-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên danh mục</label>
+                <input asp-for="Name" class="form-control" required />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Mô tả danh mục</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+
+            <div class="mt-2">
+                <button type="submit" class="btn btn-warning fw-bold px-4"><i class="bi bi-save"></i> Cập nhật</button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4 ms-2">Hủy bỏ</a>
+            </div>
+        </form>
+    </div>
+</div>

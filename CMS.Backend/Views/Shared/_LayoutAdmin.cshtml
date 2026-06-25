@@ -81,13 +81,23 @@
                     @* Chỉ hiện các menu này khi đã đăng nhập thành công *@
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
-                        <a asp-controller="Category" asp-action="Index"><i class="bi bi-tags me-2"></i> Quản lý Danh mục</a>
-                        <a asp-controller="Post" asp-action="Index"><i class="bi bi-file-text me-2"></i> Quản lý Bài viết</a>
+                        <hr class="border-secondary my-2">
+                        <small class="px-3 text-secondary text-uppercase">Nội dung CMS</small>
+                        <a asp-controller="Category" asp-action="Index"><i class="bi bi-tags me-2"></i> Danh mục</a>
+                        <a asp-controller="Post" asp-action="Index"><i class="bi bi-file-text me-2"></i> Bài viết</a>
 
-                        @* Chỉ Admin mới nhìn thấy menu Quản lý Thành viên *@
+                        <hr class="border-secondary my-2">
+                        <small class="px-3 text-secondary text-uppercase">Bán hàng</small>
+                        <a asp-controller="CategoriesProducts" asp-action="Index"><i class="bi bi-grid me-2"></i> Loại sản phẩm</a>
+                        <a asp-controller="Products" asp-action="Index"><i class="bi bi-box-seam me-2"></i> Sản phẩm</a>
+                        <a asp-controller="Orders" asp-action="Index"><i class="bi bi-cart-check me-2"></i> Đơn hàng</a>
+                        <a asp-controller="Customers" asp-action="Index"><i class="bi bi-person-badge me-2"></i> Khách hàng</a>
+
+                        <hr class="border-secondary my-2">
+                        <small class="px-3 text-secondary text-uppercase">Hệ thống</small>
                         @if (User.IsInRole("Admin") || User.IsInRole("Administrator"))
                         {
-                            <a asp-controller="User" asp-action="Index"><i class="bi bi-people me-2"></i> Quản lý Thành viên</a>
+                            <a asp-controller="User" asp-action="Index"><i class="bi bi-people me-2"></i> Tài khoản Admin</a>
                         }
                     }
                 </div>

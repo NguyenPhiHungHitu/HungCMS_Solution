@@ -1,10 +1,7 @@
-﻿
-
-@model CMS.Data.Entities.Post
+@model CMS.Backend.Controllers.PostViewModel
 @* ==========================================================
     Sinh viên: Nguyễn Phi Hùng (2123110475)
-    Chức năng: Giao diện Thêm bài viết mới
-    Ghi chú: Có hộp thoại báo lỗi đỏ và tích hợp CKEditor 5 cho ô Nội dung.
+    Chức năng: Giao diện Thêm bài viết mới (Hỗ trợ tải ảnh từ Laptop)
 ========================================================== *@
 
 @{
@@ -17,9 +14,12 @@
             <h4 class="mb-0 fw-bold">Thêm Bài Viết Mới</h4>
         </div>
         <div class="card-body">
-            <form asp-action="Create" method="post">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
 
-                <div asp-validation-summary="All" class="text-danger fw-bold fs-6 mb-3 border border-danger p-2 rounded bg-light" style="display:none;"></div>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="text-danger fw-bold fs-6 mb-3 border border-danger p-2 rounded bg-light"></div>
+                }
 
                 <div class="row">
                     <div class="col-md-8">
@@ -40,9 +40,10 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="ImageUrl" class="form-label fw-bold">Đường dẫn hình ảnh (URL)</label>
-                            <input asp-for="ImageUrl" class="form-control" placeholder="Ví dụ: /img/run.jpg hoặc dán link trên mạng..." />
-                            <div class="form-text text-muted">Có thể dán link ảnh trên internet hoặc đường dẫn ảnh tĩnh trong project. Để trống nếu không có ảnh.</div>
+                            <label asp-for="ImageUpload" class="form-label fw-bold">Chọn hình ảnh từ máy tính</label>
+                            <input asp-for="ImageUpload" type="file" class="form-control" accept="image/*" />
+                            <span asp-validation-for="ImageUpload" class="text-danger"></span>
+                            <div class="form-text text-muted">Hỗ trợ các định dạng ảnh: .jpg, .jpeg, .png, .gif. Nếu không chọn, hệ thống sẽ sử dụng ảnh mặc định.</div>
                         </div>
 
                         <div class="mt-4">
@@ -62,12 +63,5 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
         ClassicEditor.create(document.querySelector('#Content')).catch(error => { console.error(error); });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            var validationSummary = document.querySelector("[asp-validation-summary]");
-            if (validationSummary && validationSummary.innerText.trim() !== "") {
-                validationSummary.style.display = "block";
-            }
-        });
     </script>
 }

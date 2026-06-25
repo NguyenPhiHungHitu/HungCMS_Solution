@@ -1,0 +1,86 @@
+﻿@model CMS.Data.Entities.Order
+@{
+    ViewData["Title"] = "Chi tiết Đơn hàng #" + Model.Id;
+
+    // Tính tổng tiền của đơn hàng
+    decimal totalAmount = Model.OrderDetails?.Sum(x => x.Quantity * x.UnitPrice) ?? 0;
+}
+
+<div class="container-fluid mt-4 text-light">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header bg-secondary text-white font-weight-bold">
+                    THÔNG TIN ĐƠN HÀNG #@Model.Id
+                </div>
+                <div class="card-body">
+                    <p><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><strong>Ghi chú:</strong> @(string.IsNullOrEmpty(Model.Notes) ? "Không có" : Model.Notes)</p>
+                    <hr class="border-secondary" />
+
+                    <form asp-action="UpdateStatus" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="form-group">
+                            <label class="font-weight-bold">Trạng thái hiện tại:</label>
+                            <select name="status" class="form-control bg-dark text-light border-secondary">
+                                <option value="0" selected="@(Model.Status == 0 ? "selected" : null)">Chờ duyệt</option>
+                                <option value="1" selected="@(Model.Status == 1 ? "selected" : null)">Đang giao hàng</option>
+                                <option value="2" selected="@(Model.Status == 2 ? "selected" : null)">Đã hoàn thành</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-block font-weight-bold mt-3">
+                            <i class="fas fa-save mr-1"></i> Cập nhật trạng thái
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header bg-secondary text-white font-weight-bold">
+                    CHI TIẾT SẢN PHẨM MUA
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-dark table-hover mb-0 border-0">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-right">Đơn giá</th>
+                                <th class="text-right">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.OrderDetails != null)
+                            {
+                                foreach (var detail in Model.OrderDetails)
+                                {
+                                    var lineTotal = detail.Quantity * detail.UnitPrice;
+                                    <tr>
+                                        <td>@(detail.Product != null ? detail.Product.Name : "Sản phẩm đã xóa")</td>
+                                        <td class="text-center">@detail.Quantity</td>
+                                        <td class="text-right">@detail.UnitPrice.ToString("N0") đ</td>
+                                        <td class="text-right text-warning font-weight-bold">@lineTotal.ToString("N0") đ</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-right font-weight-bold text-uppercase">Tổng cộng:</td>
+                                <td class="text-right text-danger font-weight-bold" style="font-size: 1.2rem;">
+                                    @totalAmount.ToString("N0") đ
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <a asp-action="Index" class="btn btn-outline-light mt-3">
+                <i class="fas fa-arrow-left mr-1"></i> Quay lại danh sách
+            </a>
+        </div>
+    </div>
+</div>

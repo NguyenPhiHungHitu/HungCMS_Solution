@@ -1,4 +1,4 @@
-﻿// ==========================================================
+// ==========================================================
 // Sinh viên: Nguyễn Phi Hùng (2123110475)
 // Chức năng: Quản trị Thành viên (Phần Bổ sung Buổi 4)
 // Ghi chú: Xử lý Thêm, Sửa, Xóa tài khoản, tự động giữ mật khẩu cũ.
@@ -9,6 +9,7 @@ using CMS.Data;
 using CMS.Data.Entities;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using CMS.Backend.Helpers;
 
 namespace CMS.Backend.Controllers
 {
@@ -50,6 +51,7 @@ namespace CMS.Backend.Controllers
 
             if (ModelState.IsValid)
             {
+                model.PasswordHash = PasswordHasher.HashPassword(model.PasswordHash);
                 _context.Users.Add(model);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
@@ -77,7 +79,7 @@ namespace CMS.Backend.Controllers
             // 2. Xử lý mật khẩu: Nếu nhập mới thì lấy cái mới, nếu trống thì lấy cái cũ
             if (!string.IsNullOrEmpty(NewPassword))
             {
-                model.PasswordHash = NewPassword;
+                model.PasswordHash = PasswordHasher.HashPassword(NewPassword);
             }
             else
             {

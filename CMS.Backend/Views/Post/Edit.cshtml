@@ -1,4 +1,4 @@
-﻿@model CMS.Data.Entities.Post
+@model CMS.Backend.Controllers.PostViewModel
 
 @* ==========================================================
     Tên sinh viên: Nguyễn Phi Hùng (2123110475)
@@ -16,10 +16,21 @@
             <h4 class="mb-0 fw-bold">Sửa Bài Viết</h4>
         </div>
         <div class="card-body">
-            <form asp-action="Edit" method="post">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="CreatedDate" />
+                <input type="hidden" asp-for="ImageUrl" />
+
+                <div class="mb-4 text-center">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" class="img-thumbnail shadow-sm" style="width: 150px; height: 150px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="text-muted p-4 border rounded">Chưa có ảnh</div>
+                    }
+                </div>
 
                 <div asp-validation-summary="All" class="text-danger fw-bold fs-6 mb-3 border border-danger p-2 rounded bg-light" style="display:none;"></div>
 
@@ -41,8 +52,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="ImageUrl" class="form-label fw-bold">Đường dẫn hình ảnh (URL)</label>
-                            <input asp-for="ImageUrl" class="form-control" />
+                            <label asp-for="ImageUpload" class="form-label fw-bold">Thay đổi ảnh đại diện (Bỏ trống nếu giữ nguyên)</label>
+                            <input asp-for="ImageUpload" type="file" class="form-control" accept="image/*" />
+                            <span asp-validation-for="ImageUpload" class="text-danger"></span>
                         </div>
 
                         <div class="mt-4">

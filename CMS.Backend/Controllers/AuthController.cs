@@ -1,4 +1,4 @@
-﻿// ==========================================================
+// ==========================================================
 // Sinh viên: Nguyễn Phi Hùng (2123110475)
 // Chức năng: Đăng nhập & Đăng xuất (Buổi 5)
 // Ghi chú: Cấp phát Cookie bảo mật dựa trên CSDL Users.
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CMS.Data;
+using CMS.Backend.Helpers;
 
 namespace CMS.Backend.Controllers
 {
@@ -34,15 +35,20 @@ namespace CMS.Backend.Controllers
             return View();
         }
 
-        // POST: Xử lý dữ liệu khi bấm nút Đăng nhập
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
-            // 1. Tìm trong Database xem có User nào khớp cả tên và mật khẩu không
-            var user = _context.Users.FirstOrDefault(u => u.Username == username && u.PasswordHash == password);
+            // 1. Tìm trong Database xem có User nào khớp tên không
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
 
-            if (user != null)
+            if (user != null && PasswordHasher.VerifyPassword(password, user.PasswordHash))
             {
+                // Nếu khớp bằng mật khẩu thô cũ, nâng cấp sang băm SHA256
+                if (user.PasswordHash == password)
+                {
+                    user.PasswordHash = PasswordHasher.HashPassword(password);
+                    await _context.SaveChangesAsync();
+                }
                 // 2. Nếu đúng, tạo các thẻ ghi nhớ (Claims) để lưu thông tin người dùng vào phiên làm việc
                 var claims = new List<Claim>
                 {

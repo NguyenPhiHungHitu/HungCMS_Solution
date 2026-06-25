@@ -1,12 +1,8 @@
-﻿//Họ và tên: Nguyễn Phi Hùng
-//Mã số sinh viên: 2123110475
-//version: 1.0
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -35,6 +31,6 @@ namespace CMS.Data.Entities
 
         [ForeignKey("CategoryProductId")]
         public virtual CategoryProduct? CategoryProduct { get; set; }
+
     }
 }
-
