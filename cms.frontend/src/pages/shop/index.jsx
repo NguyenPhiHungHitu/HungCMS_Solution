@@ -36,24 +36,54 @@ function Shop({ onAddToCart, onAddToCompare, compareList = [] }) {
     }
   }, [searchParams]);
 
-  // Load dữ liệu ban đầu
+  // 1. Chỉ tải danh mục thương hiệu lúc mount (chỉ một lần duy nhất)
   useEffect(() => {
-    const loadCatalogData = async () => {
+    const loadCategories = async () => {
       try {
-        setLoading(true);
-        const prodData = await productService.getAll();
         const catData = await categoryProductService.getAllCategoryProducts();
-        
-        setProducts(prodData);
         setCategories(catData);
-        setLoading(false);
       } catch (err) {
         console.error("Lỗi nạp danh mục cửa hàng:", err);
+      }
+    };
+    loadCategories();
+  }, []);
+
+  // 2. Lắng nghe bộ lọc và gọi API lọc ngầm (từ Database) với Debounce tránh dồn dập
+  useEffect(() => {
+    const fetchFilteredProducts = async () => {
+      try {
+        const params = {};
+        if (minPrice.trim() !== '') params.minPrice = minPrice;
+        if (maxPrice.trim() !== '') params.maxPrice = maxPrice;
+        if (selectedBrand !== 'ALL') params.categoryProductId = selectedBrand;
+        if (searchQuery.trim() !== '') params.search = searchQuery;
+
+        // Xử lý radio priceRange nếu có
+        if (priceRange === 'UNDER_10M') {
+          params.maxPrice = 10000000;
+        } else if (priceRange === '10M_20M') {
+          params.minPrice = 10000000;
+          params.maxPrice = 20000000;
+        } else if (priceRange === 'OVER_20M') {
+          params.minPrice = 20000000;
+        }
+
+        const prodData = await productService.getAll(params);
+        setProducts(prodData);
+        setLoading(false);
+      } catch (err) {
+        console.error("Lỗi gọi API lọc sản phẩm ngầm:", err);
         setLoading(false);
       }
     };
-    loadCatalogData();
-  }, []);
+
+    const delayTimer = setTimeout(() => {
+      fetchFilteredProducts();
+    }, 400); // 400ms debounce
+
+    return () => clearTimeout(delayTimer);
+  }, [minPrice, maxPrice, selectedBrand, searchQuery, priceRange]);
 
   // Xử lý Lọc dữ liệu
   const getFilteredProducts = () => {

@@ -87,7 +87,7 @@ namespace CMS.Backend.Controllers
             {
                 try
                 {
-                    System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\n[{DateTime.Now}] --- CREATE POST ---");
+                    System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\n[{DateTime.Now}] --- CREATE POST ---");
                     var post = new Post
                     {
                         Title = vm.Title,
@@ -99,16 +99,16 @@ namespace CMS.Backend.Controllers
                     // XỬ LÝ UPLOAD HÌNH ẢNH TỪ LAPTOP
                     if (vm.ImageUpload != null && vm.ImageUpload.Length > 0)
                     {
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nFile selected: {vm.ImageUpload.FileName}, size: {vm.ImageUpload.Length} bytes");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nFile selected: {vm.ImageUpload.FileName}, size: {vm.ImageUpload.Length} bytes");
                         // 1. Định nghĩa thư mục lưu ảnh: wwwroot/images/posts
                         string webRootPath = _webHostEnvironment.WebRootPath ?? Path.Combine(_webHostEnvironment.ContentRootPath, "wwwroot");
                         string uploadsFolder = Path.Combine(webRootPath, "images", "posts");
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nTarget folder: {uploadsFolder}");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nTarget folder: {uploadsFolder}");
 
                         // Tự động tạo thư mục nếu chưa có
                         if (!Directory.Exists(uploadsFolder))
                         {
-                            System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nCreating folder...");
+                            System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nCreating folder...");
                             Directory.CreateDirectory(uploadsFolder);
                         }
 
@@ -118,42 +118,42 @@ namespace CMS.Backend.Controllers
 
                         // 3. Đường dẫn vật lý đầy đủ để lưu file
                         string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nFile path: {filePath}");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nFile path: {filePath}");
 
                         // 4. Tiến hành lưu file
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nCopying file to stream...");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nCopying file to stream...");
                         using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
                             await vm.ImageUpload.CopyToAsync(fileStream);
                         }
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nFile copied successfully");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nFile copied successfully");
 
                         // 5. Lưu đường dẫn tương đối vào database
                         post.ImageUrl = "/images/posts/" + uniqueFileName;
                     }
                     else
                     {
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nNo file selected, using default");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nNo file selected, using default");
                         post.ImageUrl = "/images/posts/default-post.jpg";
                     }
 
                     _context.Posts.Add(post);
-                    System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nSaving changes to database...");
+                    System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nSaving changes to database...");
                     await _context.SaveChangesAsync();
-                    System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nPost saved successfully!");
+                    System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nPost saved successfully!");
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
                     string errorMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                    System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nEXCEPTION: {ex.ToString()}");
+                    System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nEXCEPTION: {ex.ToString()}");
                     ModelState.AddModelError(string.Empty, "🔥 LỖI HỆ THỐNG: " + errorMsg);
                 }
             }
             else
             {
                 var errors = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nModelState is INVALID: {errors}");
+                System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nModelState is INVALID: {errors}");
             }
 
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", vm.CategoryId);
@@ -265,6 +265,44 @@ namespace CMS.Backend.Controllers
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: api upload ảnh từ CKEditor
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> UploadImage(IFormFile upload)
+        {
+            if (upload == null || upload.Length == 0)
+            {
+                return Json(new { uploaded = false, error = new { message = "Không có file nào được tải lên!" } });
+            }
+
+            try
+            {
+                string webRootPath = _webHostEnvironment.WebRootPath ?? Path.Combine(_webHostEnvironment.ContentRootPath, "wwwroot");
+                string uploadsFolder = Path.Combine(webRootPath, "images", "uploads");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                string extension = Path.GetExtension(upload.FileName);
+                string uniqueFileName = Guid.NewGuid().ToString() + extension;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await upload.CopyToAsync(fileStream);
+                }
+
+                string fileUrl = "/images/uploads/" + uniqueFileName;
+                return Json(new { uploaded = true, url = fileUrl });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { uploaded = false, error = new { message = "Lỗi hệ thống: " + ex.Message } });
+            }
         }
     }
 }

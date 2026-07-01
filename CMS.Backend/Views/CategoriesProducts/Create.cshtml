@@ -1,4 +1,4 @@
-﻿@model CMS.Data.Entities.CategoryProduct
+@model CMS.Backend.Controllers.CategoryProductViewModel
 @{
     ViewData["Title"] = "Thêm mới danh mục";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -8,7 +8,7 @@
     <h2 class="mb-4">Thêm mới danh mục sản phẩm</h2>
 
     <div class="card shadow border-0 p-4 col-md-6">
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="mb-3">
@@ -21,6 +21,12 @@
                 <label asp-for="Description" class="form-label fw-bold">Mô tả</label>
                 <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ImageUpload" class="form-label fw-bold">Ảnh đại diện danh mục</label>
+                <input asp-for="ImageUpload" type="file" class="form-control" accept="image/*" />
+                <small class="text-muted">Chọn ảnh đại diện cho danh mục (hiển thị dạng khối tròn trên trang chủ)</small>
             </div>
 
             <div class="mt-4">

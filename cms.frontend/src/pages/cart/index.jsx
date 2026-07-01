@@ -108,7 +108,7 @@ function Cart({ cart = [], onUpdateQuantity, onRemoveFromCart }) {
                             className="mr-3 rounded border"
                             style={{ width: '60px', height: '60px', objectFit: 'contain' }}
                             onError={(e) => {
-                              e.target.src = "https://via.placeholder.com/60?text=Phone";
+                              e.target.src = "https://placehold.co/60?text=Phone";
                             }}
                           />
                           <div>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +25,15 @@ namespace CMS.Data.Entities
         public int StockQuantity { get; set; }
 
         public string? ImageUrl { get; set; }
+
+        // Số lượng đã bán (dùng để xếp hạng "Bán chạy nhất")
+        public int SoldQuantity { get; set; } = 0;
+
+        // Lượt xem sản phẩm (dùng để xếp hạng "Sản phẩm Hot")
+        public int ViewCount { get; set; } = 0;
+
+        // Ngày tạo sản phẩm (dùng để sắp xếp "Sản phẩm mới nhất")
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         // Khóa ngoại nối tới CategoryProduct
         public int CategoryProductId { get; set; }

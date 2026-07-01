@@ -120,7 +120,7 @@ function Header({ cart = [], compareList = [], user = null, onLogout }) {
                           src={getImageUrl(p.imageUrl)} 
                           alt={p.name}
                           onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/40?text=Phone";
+                            e.target.src = "https://placehold.co/40?text=Phone";
                           }}
                         />
                         <div>

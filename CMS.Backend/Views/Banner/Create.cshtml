@@ -1,0 +1,82 @@
+@model CMS.Backend.Controllers.BannerViewModel
+@* ==========================================================
+    Sinh viên: Nguyễn Phi Hùng (2123110475)
+    Chức năng: Giao diện Thêm banner mới (Hỗ trợ tải ảnh từ Laptop)
+========================================================== *@
+
+@{
+    ViewData["Title"] = "Thêm banner";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2"></i>Thêm Banner Mới</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="text-danger fw-bold fs-6 mb-3 border border-danger p-2 rounded bg-light"></div>
+                }
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-bold">Tiêu đề banner</label>
+                            <input asp-for="Title" class="form-control" required placeholder="Nhập tiêu đề banner..." />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Subtitle" class="form-label fw-bold">Mô tả phụ</label>
+                            <textarea asp-for="Subtitle" class="form-control" rows="3" placeholder="Nhập mô tả ngắn cho banner..."></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="LinkUrl" class="form-label fw-bold">Đường dẫn khi click</label>
+                                    <input asp-for="LinkUrl" class="form-control" placeholder="VD: /product/1 hoặc /shop" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="BtnText" class="form-label fw-bold">Text nút bấm</label>
+                                    <input asp-for="BtnText" class="form-control" placeholder="VD: Mua ngay, Khám phá..." />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="ImageUpload" class="form-label fw-bold">Chọn hình ảnh banner</label>
+                            <input asp-for="ImageUpload" type="file" class="form-control" accept="image/*" />
+                            <span asp-validation-for="ImageUpload" class="text-danger"></span>
+                            <div class="form-text text-muted">Hỗ trợ: .jpg, .jpeg, .png, .gif. Kích thước khuyến nghị: 1200x400px.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SortOrder" class="form-label fw-bold">Thứ tự hiển thị</label>
+                            <input asp-for="SortOrder" type="number" class="form-control" min="0" />
+                            <div class="form-text text-muted">Số nhỏ hơn sẽ hiển thị trước.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsActive" class="form-check-label fw-bold">Kích hoạt hiển thị</label>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-success w-100 mb-2 fw-bold">
+                                <i class="bi bi-plus-circle"></i> Thêm Banner
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary w-100">Hủy bỏ</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

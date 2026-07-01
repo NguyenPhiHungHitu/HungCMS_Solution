@@ -1,4 +1,4 @@
-﻿//Họ và tên: Nguyễn Phi Hùng
+//Họ và tên: Nguyễn Phi Hùng
 //Mã số sinh viên: 2123110475
 //version: 1.0
 using System;
@@ -21,6 +21,9 @@ namespace CMS.Data.Entities
         public string Name { get; set; }
 
         public string? Description { get; set; }
+
+        // Ảnh đại diện cho danh mục (hiển thị dạng khối tròn trên trang chủ)
+        public string? ImageUrl { get; set; }
 
         // Quan hệ: Một danh mục có nhiều sản phẩm
         public virtual ICollection<Product>? Products { get; set; }

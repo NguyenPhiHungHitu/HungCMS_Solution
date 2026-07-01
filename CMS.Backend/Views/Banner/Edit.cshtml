@@ -1,0 +1,102 @@
+@model CMS.Backend.Controllers.BannerViewModel
+
+@* ==========================================================
+    Tên sinh viên: Nguyễn Phi Hùng (2123110475)
+    File: Views/Banner/Edit.cshtml
+    Chức năng: Giao diện Sửa banner
+========================================================== *@
+
+@{
+    ViewData["Title"] = "Sửa banner";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Sửa Banner</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ImageUrl" />
+
+                <div class="mb-4 text-center">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" class="img-thumbnail shadow-sm" style="max-height: 200px; max-width: 400px; object-fit: cover;" />
+                        <div class="form-text text-muted mt-1">Ảnh banner hiện tại</div>
+                    }
+                    else
+                    {
+                        <div class="text-muted p-4 border rounded">Chưa có ảnh</div>
+                    }
+                </div>
+
+                <div asp-validation-summary="All" class="text-danger fw-bold fs-6 mb-3 border border-danger p-2 rounded bg-light" style="display:none;"></div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-bold">Tiêu đề banner</label>
+                            <input asp-for="Title" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Subtitle" class="form-label fw-bold">Mô tả phụ</label>
+                            <textarea asp-for="Subtitle" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="LinkUrl" class="form-label fw-bold">Đường dẫn khi click</label>
+                                    <input asp-for="LinkUrl" class="form-control" placeholder="VD: /product/1 hoặc /shop" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="BtnText" class="form-label fw-bold">Text nút bấm</label>
+                                    <input asp-for="BtnText" class="form-control" placeholder="VD: Mua ngay, Khám phá..." />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="ImageUpload" class="form-label fw-bold">Thay đổi ảnh banner (Bỏ trống nếu giữ nguyên)</label>
+                            <input asp-for="ImageUpload" type="file" class="form-control" accept="image/*" />
+                            <span asp-validation-for="ImageUpload" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SortOrder" class="form-label fw-bold">Thứ tự hiển thị</label>
+                            <input asp-for="SortOrder" type="number" class="form-control" min="0" />
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsActive" class="form-check-label fw-bold">Kích hoạt hiển thị</label>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-warning w-100 fw-bold mb-2">Cập nhật thay đổi</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary w-100">Hủy bỏ</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var validationSummary = document.querySelector("[asp-validation-summary]");
+            if (validationSummary && validationSummary.innerText.trim() !== "") {
+                validationSummary.style.display = "block";
+            }
+        });
+    </script>
+}

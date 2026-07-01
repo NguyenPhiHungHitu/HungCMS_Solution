@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CMS.Data.Entities.CategoryProduct>
+@model IEnumerable<CMS.Data.Entities.CategoryProduct>
 
 @{
     ViewData["Title"] = "Danh mục Sản phẩm";
@@ -32,6 +32,7 @@
             <thead class="table-dark">
                 <tr>
                     <th class="ps-3">ID</th>
+                    <th>Hình ảnh</th>
                     <th>Tên danh mục</th>
                     <th>Mô tả</th>
                     <th class="text-center">Hành động</th>
@@ -44,6 +45,16 @@
                     {
                         <tr>
                             <td class="ps-3 fw-bold">#@item.Id</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@item.ImageUrl" alt="@item.Name" class="rounded-circle border" style="width: 45px; height: 45px; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Không có ảnh</span>
+                                }
+                            </td>
                             <td class="fw-bold text-primary">@item.Name</td>
                             <td class="text-muted">@item.Description</td>
                             <td class="text-center">

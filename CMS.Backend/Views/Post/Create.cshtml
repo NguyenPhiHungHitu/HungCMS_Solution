@@ -62,6 +62,45 @@
 @section Scripts {
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
-        ClassicEditor.create(document.querySelector('#Content')).catch(error => { console.error(error); });
+        class MyUploadAdapter {
+            constructor(loader) {
+                this.loader = loader;
+            }
+            upload() {
+                return this.loader.file
+                    .then(file => new Promise((resolve, reject) => {
+                        const data = new FormData();
+                        data.append('upload', file);
+                        fetch('/Post/UploadImage', {
+                            method: 'POST',
+                            body: data
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.uploaded) {
+                                resolve({
+                                    default: result.url
+                                });
+                            } else {
+                                reject(result.error ? result.error.message : 'Upload failed');
+                            }
+                        })
+                        .catch(error => {
+                            reject(error.message);
+                        });
+                    }));
+            }
+            abort() {}
+        }
+
+        function MyCustomUploadAdapterPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                return new MyUploadAdapter(loader);
+            };
+        }
+
+        ClassicEditor.create(document.querySelector('#Content'), {
+            extraPlugins: [MyCustomUploadAdapterPlugin]
+        }).catch(error => { console.error(error); });
     </script>
 }

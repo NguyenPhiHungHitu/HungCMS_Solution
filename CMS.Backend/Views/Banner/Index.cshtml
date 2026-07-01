@@ -1,0 +1,82 @@
+@model IEnumerable<CMS.Data.Entities.Banner>
+@* Họ và tên: Nguyễn Phi Hùng (2123110475) - File: Views/Banner/Index.cshtml *@
+@{
+    ViewData["Title"] = "Quản lý Banner";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold"><i class="bi bi-images me-2"></i>Quản Lý Banner Trang Chủ</h2>
+        <a asp-action="Create" class="btn btn-success"><i class="bi bi-plus-circle me-1"></i>Thêm banner mới</a>
+    </div>
+
+    <table class="table table-hover table-striped shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Id</th>
+                <th>Hình ảnh</th>
+                <th>Tiêu đề</th>
+                <th>Mô tả phụ</th>
+                <th>Thứ tự</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th class="text-center">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="align-middle fw-bold">@item.Id</td>
+                        <td class="align-middle">
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" style="max-height: 50px; max-width: 100px; object-fit: cover; border-radius: 4px;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Không ảnh</span>
+                            }
+                        </td>
+                        <td class="align-middle fw-bold">@item.Title</td>
+                        <td class="align-middle text-muted small">
+                            @if (!string.IsNullOrEmpty(item.Subtitle))
+                            {
+                                @(item.Subtitle.Length > 50 ? item.Subtitle.Substring(0, 50) + "..." : item.Subtitle)
+                            }
+                        </td>
+                        <td class="align-middle">
+                            <span class="badge bg-secondary">@item.SortOrder</span>
+                        </td>
+                        <td class="align-middle">
+                            @if (item.IsActive)
+                            {
+                                <span class="badge bg-success">Đang hiện</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Đã ẩn</span>
+                            }
+                        </td>
+                        <td class="align-middle">@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="align-middle text-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i> Sửa</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Xóa</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        Chưa có banner nào. Hãy thêm banner mới!
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

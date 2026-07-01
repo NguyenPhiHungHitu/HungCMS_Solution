@@ -68,8 +68,13 @@ function Checkout({ cart = [], user = null, onClearCart, onAddOrder }) {
         onClearCart();
       })
       .catch(err => {
+        // Kiểm tra xem lỗi trả về từ Backend có chứa thông báo lỗi cụ thể (như lỗi hết hàng) không
+        if (err.response && err.response.data && err.response.data.message) {
+          alert(err.response.data.message);
+          return;
+        }
         console.error("Lỗi đồng bộ đặt hàng lên Database, chuyển sang chế độ Offline:", err);
-        // Chế độ dự phòng offline khi backend chưa chạy
+        // Chế độ dự phòng offline khi backend chưa chạy hoặc lỗi kết nối mạng
         const details = {
           id: orderId,
           date: new Date().toISOString(),
@@ -358,7 +363,7 @@ function Checkout({ cart = [], user = null, onClearCart, onAddOrder }) {
                       style={{ width: '45px', height: '45px', objectFit: 'contain' }}
                     />
                     <div className="flex-grow-1 min-width-0">
-                      <h7 className="font-weight-bold text-dark small text-truncate d-block">{item.name}</h7>
+                      <span className="font-weight-bold text-dark small text-truncate d-block">{item.name}</span>
                       <small className="text-muted">{item.selectedColor} | {item.selectedStorage} x {item.quantity}</small>
                     </div>
                     <span className="font-weight-bold text-danger small ml-2">{formatVND(item.price * item.quantity)}</span>

@@ -34,11 +34,20 @@ function Profile({ user = null, onLogin, onUpdateProfile, orders = [] }) {
   const [forgotMessage, setForgotMessage] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState(false);
 
-  const handleForgotSubmit = (e) => {
+  const handleForgotSubmit = async (e) => {
     e.preventDefault();
     if (!forgotEmail.trim()) return;
-    setForgotSuccess(true);
-    setForgotMessage(`Yêu cầu đặt lại mật khẩu đã được gửi thành công đến email ${forgotEmail}. Vui lòng kiểm tra hộp thư!`);
+    try {
+      setForgotMessage('Đang xử lý yêu cầu khôi phục mật khẩu...');
+      setForgotSuccess(false);
+      const res = await customerService.forgotPassword(forgotEmail.trim());
+      setForgotSuccess(true);
+      setForgotMessage(res.message);
+    } catch (err) {
+      setForgotSuccess(false);
+      const errorMsg = err.response?.data?.message || 'Có lỗi xảy ra khi khôi phục mật khẩu. Vui lòng thử lại!';
+      setForgotMessage(errorMsg);
+    }
   };
 
   // Danh sách đơn hàng thực tế tải từ Database
@@ -116,18 +125,29 @@ function Profile({ user = null, onLogin, onUpdateProfile, orders = [] }) {
     }
   };
 
-  // Đổi mật khẩu giả lập
-  const handleChangePassword = (e) => {
+  // Đổi mật khẩu thực tế từ Backend
+  const handleChangePassword = async (e) => {
     e.preventDefault();
+    if (!user || !user.id) {
+      setPassMessage('Bạn cần đăng nhập để thực hiện đổi mật khẩu!');
+      return;
+    }
     if (newPass !== confirmPass) {
       setPassMessage('Mật khẩu xác nhận không trùng khớp!');
       return;
     }
-    setPassMessage('Đổi mật khẩu tài khoản thành công!');
-    setOldPass('');
-    setNewPass('');
-    setConfirmPass('');
-    setTimeout(() => setPassMessage(''), 3000);
+    try {
+      setPassMessage('Đang cập nhật mật khẩu mới...');
+      const res = await customerService.changePassword(user.id, oldPass, newPass);
+      setPassMessage(res.message || 'Đổi mật khẩu thành công!');
+      setOldPass('');
+      setNewPass('');
+      setConfirmPass('');
+      setTimeout(() => setPassMessage(''), 3000);
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || 'Có lỗi xảy ra khi đổi mật khẩu!';
+      setPassMessage(errorMsg);
+    }
   };
 
   // Định dạng VND

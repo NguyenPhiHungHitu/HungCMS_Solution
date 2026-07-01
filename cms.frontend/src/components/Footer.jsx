@@ -60,7 +60,7 @@ function Footer() {
               <li className="mb-2"><a href="#" className="text-muted text-decoration-none"><i className="fa-solid fa-shield-halved mr-1 text-primary small"></i> Đổi mới 30 ngày lỗi phần cứng</a></li>
             </ul>
             <div className="mt-3">
-              <h7 className="text-white font-weight-bold small d-block mb-2">Liên kết mạng xã hội:</h7>
+              <span className="text-white font-weight-bold small d-block mb-2">Liên kết mạng xã hội:</span>
               <div className="d-flex gap-2">
                 <a href="#" className="btn btn-outline-light btn-sm rounded-circle" style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i className="fab fa-facebook-f"></i></a>
                 <a href="#" className="btn btn-outline-light btn-sm rounded-circle" style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><i className="fab fa-youtube"></i></a>
@@ -90,7 +90,7 @@ function Footer() {
               <div className="alert alert-success py-1 px-2 small mb-3">Đăng ký thành công!</div>
             )}
             
-            <h7 className="text-white font-weight-bold small d-block mb-2">Hình thức thanh toán:</h7>
+            <span className="text-white font-weight-bold small d-block mb-2">Hình thức thanh toán:</span>
             <div className="d-flex gap-2 flex-wrap text-muted" style={{ fontSize: '24px' }}>
               <i className="fab fa-cc-visa text-white-50" title="Visa"></i>
               <i className="fab fa-cc-mastercard text-white-50" title="Mastercard"></i>

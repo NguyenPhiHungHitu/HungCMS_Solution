@@ -56,6 +56,23 @@ const customerService = {
         const finalData = Array.isArray(data) ? data : (data?.value || data?.$values || []);
         return finalData;
       });
+  },
+
+  forgotPassword: (email) => {
+    return axiosClient.post('/Customers/forgot-password', { email })
+      .then(res => {
+        return res.data ? res.data : res;
+      });
+  },
+
+  changePassword: (id, oldPassword, newPassword) => {
+    return axiosClient.post(`/Customers/change-password/${id}`, {
+      oldPassword,
+      newPassword
+    })
+    .then(res => {
+      return res.data ? res.data : res;
+    });
   }
 };
 

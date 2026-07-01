@@ -119,7 +119,7 @@ function Compare({ compareList = [], onRemoveFromCompare, onAddToCart, onAddToCo
                         className="mb-3"
                         style={{ height: '110px', objectFit: 'contain' }}
                         onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/110?text=Phone";
+                          e.target.src = "https://placehold.co/110?text=Phone";
                         }}
                       />
                       

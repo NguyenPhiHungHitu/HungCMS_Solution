@@ -196,7 +196,7 @@ function ProductDetail({ onAddToCart, onAddToCompare, compareList = [] }) {
                 alt={product.name} 
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = "https://via.placeholder.com/400?text=HungMobile";
+                  e.target.src = "https://placehold.co/400?text=HungMobile";
                 }}
               />
             </div>

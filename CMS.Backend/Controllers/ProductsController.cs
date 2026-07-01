@@ -32,6 +32,10 @@ namespace CMS.Backend.Controllers
         public int CategoryProductId { get; set; }
         public string? ImageUrl { get; set; }
         public IFormFile? ImageUpload { get; set; } // Hứng file ảnh từ laptop
+
+        // Trường bổ sung cho tính năng sắp xếp sản phẩm
+        public int SoldQuantity { get; set; } = 0;  // Số lượng đã bán
+        public int ViewCount { get; set; } = 0;      // Lượt xem sản phẩm
     }
 
     // =======================================================
@@ -72,7 +76,7 @@ namespace CMS.Backend.Controllers
             {
                 try
                 {
-                    System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\n[{DateTime.Now}] --- CREATE PRODUCT ---");
+                    System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\n[{DateTime.Now}] --- CREATE PRODUCT ---");
                     // Chuyển đổi dữ liệu từ ViewModel sang Entity gốc
                     var product = new Product
                     {
@@ -80,22 +84,25 @@ namespace CMS.Backend.Controllers
                         Description = vm.Description,
                         Price = vm.Price,
                         StockQuantity = vm.StockQuantity,
-                        CategoryProductId = vm.CategoryProductId
+                        CategoryProductId = vm.CategoryProductId,
+                        SoldQuantity = vm.SoldQuantity,
+                        ViewCount = vm.ViewCount,
+                        CreatedDate = DateTime.Now // Tự động gán ngày tạo
                     };
 
                     // XỬ LÝ UPLOAD FILE ẢNH TỪ LAPTOP
                     if (vm.ImageUpload != null && vm.ImageUpload.Length > 0)
                     {
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nFile selected: {vm.ImageUpload.FileName}, size: {vm.ImageUpload.Length} bytes");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nFile selected: {vm.ImageUpload.FileName}, size: {vm.ImageUpload.Length} bytes");
                         // Định nghĩa đường dẫn lưu: wwwroot/images/products
                         string webRootPath = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
                         string uploadsFolder = Path.Combine(webRootPath, "images", "products");
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nTarget folder: {uploadsFolder}");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nTarget folder: {uploadsFolder}");
 
                         // Tự động tạo thư mục con 'products' nếu chưa có
                         if (!Directory.Exists(uploadsFolder))
                         {
-                            System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nCreating folder...");
+                            System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nCreating folder...");
                             Directory.CreateDirectory(uploadsFolder);
                         }
 
@@ -103,43 +110,43 @@ namespace CMS.Backend.Controllers
                         string extension = Path.GetExtension(vm.ImageUpload.FileName);
                         string uniqueFileName = Guid.NewGuid().ToString() + extension;
                         string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nFile path: {filePath}");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nFile path: {filePath}");
 
                         // Thực hiện ghi file vật lý vào ổ đĩa laptop
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nCopying file to stream...");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nCopying file to stream...");
                         using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
                             await vm.ImageUpload.CopyToAsync(fileStream);
                         }
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nFile copied successfully");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nFile copied successfully");
 
                         // Lưu đường dẫn tương đối chuẩn vào cơ sở dữ liệu
                         product.ImageUrl = "/images/products/" + uniqueFileName;
                     }
                     else
                     {
-                        System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nNo file selected, using default");
+                        System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nNo file selected, using default");
                         // NẾU KHÔNG CHỌN ẢNH: Gán ảnh sản phẩm mặc định để tránh lỗi database NOT NULL
                         product.ImageUrl = "/images/products/default-product.jpg";
                     }
 
                     _context.Add(product);
-                    System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nSaving changes to database...");
+                    System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nSaving changes to database...");
                     await _context.SaveChangesAsync();
-                    System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nProduct saved successfully!");
+                    System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", "\nProduct saved successfully!");
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
                     string innerErr = ex.InnerException != null ? " -> Chi tiết: " + ex.InnerException.Message : "";
-                    System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nEXCEPTION: {ex.ToString()}");
+                    System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nEXCEPTION: {ex.ToString()}");
                     ModelState.AddModelError(string.Empty, "Hệ thống từ chối lưu: " + ex.Message + innerErr);
                 }
             }
             else
             {
                 var errors = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                System.IO.File.AppendAllText(@"c:\!Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nModelState is INVALID: {errors}");
+                System.IO.File.AppendAllText(@"c:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\upload_debug.txt", $"\nModelState is INVALID: {errors}");
             }
 
             // Load lại danh mục nếu form nhập liệu bị lỗi Validation
@@ -162,7 +169,9 @@ namespace CMS.Backend.Controllers
                 Price = product.Price,
                 StockQuantity = product.StockQuantity,
                 CategoryProductId = product.CategoryProductId,
-                ImageUrl = product.ImageUrl
+                ImageUrl = product.ImageUrl,
+                SoldQuantity = product.SoldQuantity,
+                ViewCount = product.ViewCount
             };
 
             ViewBag.CategoryList = new SelectList(await _context.CategoriesProducts.ToListAsync(), "Id", "Name", product.CategoryProductId);
@@ -179,6 +188,8 @@ namespace CMS.Backend.Controllers
             {
                 try
                 {
+                    // Lấy sản phẩm cũ để giữ CreatedDate gốc
+                    var existingProd = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == vm.Id);
                     var product = new Product
                     {
                         Id = vm.Id,
@@ -187,7 +198,10 @@ namespace CMS.Backend.Controllers
                         Price = vm.Price,
                         StockQuantity = vm.StockQuantity,
                         CategoryProductId = vm.CategoryProductId,
-                        ImageUrl = vm.ImageUrl // Giữ lại ảnh cũ tạm thời
+                        ImageUrl = vm.ImageUrl, // Giữ lại ảnh cũ tạm thời
+                        SoldQuantity = vm.SoldQuantity,
+                        ViewCount = vm.ViewCount,
+                        CreatedDate = existingProd?.CreatedDate ?? DateTime.Now // Giữ nguyên ngày tạo gốc
                     };
 
                     if (vm.ImageUpload != null && vm.ImageUpload.Length > 0)

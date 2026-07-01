@@ -1,4 +1,4 @@
-﻿//Họ và tên: Nguyễn Phi Hùng
+//Họ và tên: Nguyễn Phi Hùng
 //Mã số sinh viên: 2123110475
 //version: 1.0
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +20,7 @@ namespace CMS.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<Banner> Banners { get; set; }
 
     }
 }

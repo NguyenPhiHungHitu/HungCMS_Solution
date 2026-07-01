@@ -49,7 +49,7 @@ const ProductCard = ({ product, onAddToCart, onAddToCompare, isCompared }) => {
             alt={name}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "https://via.placeholder.com/200?text=HungMobile";
+              e.target.src = "https://placehold.co/200?text=HungMobile";
             }}
           />
         </div>

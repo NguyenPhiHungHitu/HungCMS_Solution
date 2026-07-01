@@ -14,10 +14,13 @@ axiosClient.interceptors.response.use(
         return response.data;
     },
     (error) => {
-        console.error('Lỗi kết nối API:', error);
+        // Thay vì in console.error đỏ màn hình cho các lỗi Client (như 401, 400), ta chỉ cảnh báo nhẹ
+        console.warn('Yêu cầu API thất bại:', error.message);
         return Promise.reject(error);
     }
 );
+
+export const IMAGE_BASE_URL = process.env.REACT_APP_IMAGE_BASE_URL || 'https://localhost:7044';
 
 export const getBackendDomain = () => {
     try {
@@ -29,11 +32,11 @@ export const getBackendDomain = () => {
 };
 
 export const getImageUrl = (url) => {
-    if (!url) return 'https://via.placeholder.com/200?text=No+Image';
+    if (!url) return 'https://placehold.co/200?text=No+Image';
     if (url.startsWith('http://') || url.startsWith('https://')) {
         return url;
     }
-    return `${getBackendDomain()}${url}`;
+    return `${IMAGE_BASE_URL}${url}`;
 };
 
 export default axiosClient;

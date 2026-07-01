@@ -11,6 +11,8 @@ using System.Net;
 using System.Net.Mail;
 using System.Linq;
 
+using Microsoft.Extensions.Configuration;
+
 namespace CMS.Backend.Controllers.Api
 {
     [Route("api/Orders")] // Chốt đường dẫn rõ ràng cho Frontend
@@ -18,10 +20,12 @@ namespace CMS.Backend.Controllers.Api
     public class OrdersApiController : ControllerBase // ĐỔI TÊN THÀNH OrdersApiController
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public OrdersApiController(ApplicationDbContext context)
+        public OrdersApiController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("checkout")]
@@ -33,15 +37,30 @@ namespace CMS.Backend.Controllers.Api
             order.OrderDate = DateTime.Now;
             order.Status = 0; // 0: Chờ duyệt
 
-            // Tiêu chí 30: Trừ bớt số lượng sản phẩm tồn kho trong database
+            // Kiểm tra số lượng tồn kho trước khi thực hiện đặt hàng
             if (order.OrderDetails != null)
             {
                 foreach (var detail in order.OrderDetails)
                 {
                     var product = await _context.Products.FindAsync(detail.ProductId);
+                    if (product == null)
+                    {
+                        return BadRequest(new { message = $"Sản phẩm có mã #{detail.ProductId} không tồn tại!" });
+                    }
+                    if (detail.Quantity > product.StockQuantity)
+                    {
+                        return BadRequest(new { message = $"Sản phẩm '{product.Name}' hiện chỉ còn {product.StockQuantity} sản phẩm trong kho. Quý khách vui lòng giảm số lượng đặt hàng xuống hoặc quay lại giỏ hàng để cập nhật!" });
+                    }
+                }
+
+                // Khấu trừ tồn kho + Cộng số lượng đã bán
+                foreach (var detail in order.OrderDetails)
+                {
+                    var product = await _context.Products.FindAsync(detail.ProductId);
                     if (product != null)
                     {
-                        product.StockQuantity = Math.Max(0, product.StockQuantity - detail.Quantity);
+                        product.StockQuantity -= detail.Quantity;  // Trừ tồn kho
+                        product.SoldQuantity += detail.Quantity;   // Cộng số lượng đã bán (hiển thị trên trang chủ)
                     }
                 }
             }
@@ -96,19 +115,33 @@ namespace CMS.Backend.Controllers.Api
                             $"<p>Hùng Mobile sẽ liên hệ trực tiếp qua số điện thoại <b>{customer.Phone}</b> để xác nhận giao hàng.</p>" +
                             $"<p>Trân trọng cảm ơn,<br/><b>Ban quản trị Hùng Mobile</b></p>";
 
-                    using (var mail = new MailMessage())
-                    {
-                        mail.From = new MailAddress("no-reply@hungmobile.com", "Hùng Mobile");
-                        mail.To.Add(new MailAddress(customer.Email));
-                        mail.Subject = subject;
-                        mail.Body = body;
-                        mail.IsBodyHtml = true;
+                    // Đọc cấu hình SMTP động từ appsettings.json
+                    string smtpServer = _configuration["SmtpSettings:Server"] ?? "smtp.gmail.com";
+                    int smtpPort = int.TryParse(_configuration["SmtpSettings:Port"], out int port) ? port : 587;
+                    string senderEmail = _configuration["SmtpSettings:SenderEmail"] ?? "no-reply@hungmobile.com";
+                    string senderName = _configuration["SmtpSettings:SenderName"] ?? "Hùng Mobile";
+                    string smtpUser = _configuration["SmtpSettings:Username"] ?? "";
+                    string smtpPass = _configuration["SmtpSettings:Password"] ?? "";
 
-                        using (var smtp = new SmtpClient())
+                    if (!string.IsNullOrEmpty(smtpUser) && !string.IsNullOrEmpty(smtpPass))
+                    {
+                        using (var mail = new MailMessage())
                         {
-                            smtp.Host = "localhost"; // Cấu hình test hoặc mock smtp
-                            smtp.Port = 25;
-                            // smtp.Send(mail); // Giả lập để không crash nếu không có máy chủ SMTP vật lý
+                            mail.From = new MailAddress(senderEmail, senderName);
+                            mail.To.Add(new MailAddress(customer.Email));
+                            mail.Subject = subject;
+                            mail.Body = body;
+                            mail.IsBodyHtml = true;
+
+                            using (var smtp = new SmtpClient(smtpServer, smtpPort))
+                            {
+                                smtp.Credentials = new NetworkCredential(smtpUser, smtpPass);
+                                smtp.EnableSsl = true;
+                                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                                smtp.UseDefaultCredentials = false;
+                                
+                                smtp.Send(mail); // Gửi email thực tế cho khách hàng
+                            }
                         }
                     }
                 }

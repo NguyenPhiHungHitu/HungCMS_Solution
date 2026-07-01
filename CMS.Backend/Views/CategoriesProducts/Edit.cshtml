@@ -1,4 +1,4 @@
-﻿@model CMS.Data.Entities.CategoryProduct
+@model CMS.Backend.Controllers.CategoryProductViewModel
 
 @{
     ViewData["Title"] = "Cập nhật Danh mục Sản phẩm";
@@ -11,9 +11,10 @@
 
 <div class="card shadow border-0 col-md-6">
     <div class="card-body p-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImageUrl" />
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Tên danh mục</label>
@@ -21,10 +22,23 @@
                 <span asp-validation-for="Name" class="text-danger small"></span>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-3">
                 <label class="form-label fw-bold">Mô tả danh mục</label>
                 <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Ảnh đại diện danh mục</label>
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="mb-2">
+                        <img src="@Model.ImageUrl" alt="Ảnh hiện tại" class="rounded-circle border" style="width: 80px; height: 80px; object-fit: cover;" />
+                        <small class="text-muted d-block mt-1">Ảnh hiện tại</small>
+                    </div>
+                }
+                <input asp-for="ImageUpload" type="file" class="form-control" accept="image/*" />
+                <small class="text-muted">Chọn ảnh mới để thay thế (bỏ trống nếu giữ ảnh cũ)</small>
             </div>
 
             <div class="mt-2">

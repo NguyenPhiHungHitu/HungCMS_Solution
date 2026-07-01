@@ -2,13 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import postService from '../../services/postService';
-import { getImageUrl } from '../../api/axiosClient';
+import { getImageUrl, getBackendDomain } from '../../api/axiosClient';
 
 function BlogDetail() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [popularPosts, setPopularPosts] = useState([]);
+
+  // Chuyển đổi URL ảnh tương đối trong nội dung HTML sang URL tuyệt đối trỏ về Backend
+  const processContent = (htmlContent) => {
+    if (!htmlContent) return '';
+    const backendDomain = getBackendDomain();
+    // Thay thế src="/images/..." thành src="https://localhost:7044/images/..."
+    return htmlContent.replace(/src=["']\/images\//g, `src="${backendDomain}/images/`);
+  };
 
   useEffect(() => {
     const loadPostDetail = async () => {
@@ -83,7 +91,7 @@ function BlogDetail() {
                 className="w-100"
                 style={{ objectFit: 'cover' }}
                 onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/800x400?text=HungMobile+News";
+                  e.target.src = "https://placehold.co/800x400?text=HungMobile+News";
                 }}
               />
             </div>
@@ -92,7 +100,7 @@ function BlogDetail() {
             <div 
               className="post-content text-secondary text-justify" 
               style={{ lineHeight: '1.8', fontSize: '15px' }}
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: processContent(post.content) }}
             />
 
             {/* Nút quay lại */}
@@ -120,7 +128,7 @@ function BlogDetail() {
                       className="rounded mr-2 border"
                       style={{ width: '60px', height: '60px', objectFit: 'cover' }}
                       onError={(e) => {
-                        e.target.src = "https://via.placeholder.com/60?text=News";
+                        e.target.src = "https://placehold.co/60?text=News";
                       }}
                     />
                     <div className="flex-grow-1 min-width-0">

@@ -47,3 +47,21 @@ Copying file to stream...
 File copied successfully
 Saving changes to database...
 Post saved successfully!
+[25/06/2026 2:29:09 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[25/06/2026 2:29:10 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[25/06/2026 2:29:10 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[25/06/2026 2:29:47 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[25/06/2026 2:30:39 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[25/06/2026 2:36:43 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[01/07/2026 1:47:35 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[01/07/2026 1:47:35 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[01/07/2026 1:47:37 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[01/07/2026 1:48:19 CH] Lỗi Mail: The SMTP server requires a secure connection or the client was not authenticated. The server response was: 5.7.0 Authentication Required. For more information, go to
+[01/07/2026 2:34:59 CH] --- CREATE POST ---
+File selected: shopping (2).webp, size: 5736 bytes
+Target folder: C:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\posts
+File path: C:\Disk D\NguyenPhiHung_ASP\HungCMS_Solution\CMS.Backend\wwwroot\images\posts\e76ed011-8e83-4002-8bb5-db41666c688e.webp
+Copying file to stream...
+File copied successfully
+Saving changes to database...
+Post saved successfully!

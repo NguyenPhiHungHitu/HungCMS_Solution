@@ -4,7 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import productService from '../../services/productService';
 import categoryProductService from '../../services/categoryProductService';
 import postService from '../../services/postService';
+import bannerService from '../../services/bannerService';
 import ProductCard from '../../components/ProductCard';
+import { getImageUrl } from '../../api/axiosClient';
 
 function Home({ onAddToCart, onAddToCompare, compareList = [] }) {
   const [products, setProducts] = useState([]);
@@ -14,37 +16,14 @@ function Home({ onAddToCart, onAddToCompare, compareList = [] }) {
   const [activeTab, setActiveTab] = useState('BEST_SELLER');
   const navigate = useNavigate();
 
+  // State riêng cho 3 loại sản phẩm (dữ liệu được sắp xếp từ Backend)
+  const [newestProducts, setNewestProducts] = useState([]);       // Sản phẩm mới nhất (theo CreatedDate)
+  const [bestSellerProducts, setBestSellerProducts] = useState([]); // Bán chạy nhất (theo SoldQuantity)
+  const [hotProducts, setHotProducts] = useState([]);             // Hot nhất (theo ViewCount)
+
   // Banner slide index
   const [currentSlide, setCurrentSlide] = useState(0);
-  const banners = [
-    {
-      id: 1,
-      title: "IPHONE 15 PRO MAX - TITAN TỰ NHIÊN",
-      subtitle: "Siêu phẩm đỉnh cao từ Apple. Trả góp 0%. Khung viền Titan siêu bền nhẹ.",
-      btnText: "Mua ngay",
-      link: "/product/1",
-      bgColor: "#1a1c1e",
-      image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1200&q=80"
-    },
-    {
-      id: 2,
-      title: "GALAXY S24 ULTRA - AI QUYỀN NĂNG",
-      subtitle: "Kỷ nguyên Galaxy AI đã tới. Tích hợp S-Pen, Camera 200MP chống rung cực đỉnh.",
-      btnText: "Đặt hàng ngay",
-      link: "/product/2",
-      bgColor: "#0f1626",
-      image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=1200&q=80"
-    },
-    {
-      id: 3,
-      title: "XIAOMI 14 ULTRA - ỐNG KÍNH LEICA",
-      subtitle: "Cảm biến ảnh 1 inch biến thiên khẩu độ. Đẳng cấp nhiếp ảnh di động chuyên nghiệp.",
-      btnText: "Khám phá ngay",
-      link: "/product/5",
-      bgColor: "#050505",
-      image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1200&q=80"
-    }
-  ];
+  const [banners, setBanners] = useState([]);
 
   // Countdown timer cho Flash Sale (giả lập đếm ngược 8 tiếng)
   const [timeLeft, setTimeLeft] = useState(28800); // 8 hours in seconds
@@ -73,18 +52,29 @@ function Home({ onAddToCart, onAddToCompare, compareList = [] }) {
     return () => clearInterval(slideTimer);
   }, [banners.length]);
 
-  // Load dữ liệu
+  // Load dữ liệu từ Backend API
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
-        const prodData = await productService.getAll();
-        const catData = await categoryProductService.getAllCategoryProducts();
-        const postData = await postService.getAllPosts();
+        // Gọi song song tất cả API để tải nhanh
+        const [prodData, catData, postData, bannerData, newestData, bestSellerData, hotData] = await Promise.all([
+          productService.getAll(),
+          categoryProductService.getAllCategoryProducts(),
+          postService.getAllPosts(),
+          bannerService.getAllBanners(),
+          productService.getNewest(3),      // 3 sản phẩm mới nhất (Backend sort theo CreatedDate)
+          productService.getBestSeller(3),   // 3 sản phẩm bán chạy nhất (Backend sort theo SoldQuantity)
+          productService.getHot(3)           // 3 sản phẩm hot nhất (Backend sort theo ViewCount)
+        ]);
 
         setProducts(prodData);
         setCategories(catData);
-        setPosts(postData.slice(0, 3)); // Lấy tối đa 3 bài viết
+        setPosts(postData.slice(0, 3));
+        setBanners(bannerData);
+        setNewestProducts(newestData);
+        setBestSellerProducts(bestSellerData);
+        setHotProducts(hotData);
         setLoading(false);
       } catch (err) {
         console.error("Lỗi nạp dữ liệu trang chủ:", err);
@@ -112,12 +102,6 @@ function Home({ onAddToCart, onAddToCompare, compareList = [] }) {
   // Lọc sản phẩm cho Flash Sale (giảm giá nhiều nhất)
   const flashSaleProducts = products.slice(0, 4);
 
-  // Tiêu chí 36: Lọc 3 sản phẩm mới nhất (theo ID giảm dần)
-  const latestProducts = [...products].sort((a, b) => b.id - a.id).slice(0, 3);
-
-  // Tiêu chí 37: Lọc 3 sản phẩm bán chạy nhất (theo đánh giá)
-  const topSellingProducts = [...products].sort((a, b) => b.rating - a.rating || b.id - a.id).slice(0, 3);
-
   // Lọc sản phẩm nổi bật theo Tabs
   const getTabProducts = () => {
     if (activeTab === 'BEST_SELLER') {
@@ -131,45 +115,65 @@ function Home({ onAddToCart, onAddToCompare, compareList = [] }) {
 
   return (
     <div className="homepage-wrapper">
-      {/* 1. HERO SLIDER BANNER (AUTOPLAY) */}
-      <section className="container mt-4">
-        <div className="hero-carousel position-relative" style={{ backgroundColor: banners[currentSlide].bgColor }}>
-          <div className="row no-gutters align-items-center">
-            <div className="col-md-6 p-5 text-white order-2 order-md-1">
-              <h2 className="font-weight-bold mb-3 animated fadeInDown">{banners[currentSlide].title}</h2>
-              <p className="lead mb-4 text-white-50 animated fadeInUp" style={{ fontSize: '16px' }}>{banners[currentSlide].subtitle}</p>
-              <Link to={banners[currentSlide].link} className="btn btn-primary btn-lg px-4 buy-now-btn-pulse font-weight-bold" style={{ borderRadius: '30px' }}>
-                {banners[currentSlide].btnText} <i className="fa-solid fa-arrow-right ml-2"></i>
-              </Link>
-            </div>
-            <div className="col-md-6 order-1 order-md-2" style={{ height: '380px', overflow: 'hidden' }}>
+      {/* 1. HERO SLIDER BANNER (AUTOPLAY) - Dữ liệu động từ API */}
+      {banners.length > 0 && (
+        <section className="container mt-4">
+          <div className="hero-carousel position-relative overflow-hidden" style={{ borderRadius: '12px', background: '#1a1c1e' }}>
+            <Link to={banners[currentSlide].linkUrl || '#'} className="d-block w-100">
               <img 
-                src={banners[currentSlide].image} 
-                alt="Banner phone" 
-                className="w-100 h-100" 
-                style={{ objectFit: 'cover' }} 
+                src={getImageUrl(banners[currentSlide].imageUrl)} 
+                alt={banners[currentSlide].title} 
+                className="w-100 d-block" 
+                style={{ width: '100%', height: 'auto', maxHeight: '420px', objectFit: 'contain' }} 
               />
+            </Link>
+
+            {/* Overlay Caption - Sleek & Premium Design */}
+            {(banners[currentSlide].title || banners[currentSlide].subtitle) && (
+              <div className="position-absolute p-4 text-white d-none d-md-block" style={{
+                bottom: '30px',
+                left: '30px',
+                background: 'rgba(0, 0, 0, 0.65)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: '12px',
+                maxWidth: '400px',
+                zIndex: 5,
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+              }}>
+                <h4 className="font-weight-bold mb-2 animated fadeInDown">{banners[currentSlide].title}</h4>
+                {banners[currentSlide].subtitle && (
+                  <p className="small mb-3 text-white-50 animated fadeInUp" style={{ fontSize: '13px', lineHeight: '1.4' }}>
+                    {banners[currentSlide].subtitle}
+                  </p>
+                )}
+                {banners[currentSlide].linkUrl && banners[currentSlide].btnText && (
+                  <Link to={banners[currentSlide].linkUrl} className="btn btn-primary btn-sm px-3 py-1 font-weight-bold animated fadeInUp" style={{ borderRadius: '20px' }}>
+                    {banners[currentSlide].btnText} <i className="fa-solid fa-arrow-right ml-1" style={{ fontSize: '10px' }}></i>
+                  </Link>
+                )}
+              </div>
+            )}
+
+            {/* Dots Indicator */}
+            <div className="position-absolute d-flex gap-2" style={{ bottom: '15px', right: '40px', zIndex: 10 }}>
+              {banners.map((_, idx) => (
+                <button 
+                  key={idx}
+                  className="border-0 rounded-circle"
+                  style={{ 
+                    width: '10px', 
+                    height: '10px', 
+                    backgroundColor: idx === currentSlide ? 'var(--primary)' : 'rgba(255,255,255,0.4)',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s'
+                  }}
+                  onClick={() => setCurrentSlide(idx)}
+                ></button>
+              ))}
             </div>
           </div>
-
-          {/* Dots Indicator */}
-          <div className="position-absolute d-flex gap-2" style={{ bottom: '15px', left: '40px', zIndex: 10 }}>
-            {banners.map((_, idx) => (
-              <button 
-                key={idx}
-                className="border-0 rounded-circle"
-                style={{ 
-                  width: '10px', 
-                  height: '10px', 
-                  backgroundColor: idx === currentSlide ? 'var(--primary)' : 'rgba(255,255,255,0.4)',
-                  cursor: 'pointer' 
-                }}
-                onClick={() => setCurrentSlide(idx)}
-              ></button>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 2. CHÍNH SÁCH CAM KẾT (4 CỘT) */}
       <section className="container mt-4 py-3 bg-white rounded-lg shadow-sm">
@@ -197,27 +201,67 @@ function Home({ onAddToCart, onAddToCompare, compareList = [] }) {
         </div>
       </section>
 
-      {/* 3. DANH MỤC CÁC HÃNG THƯƠNG HIỆU */}
+      {/* 3. DANH MỤC THƯƠNG HIỆU - Khối tròn với ảnh đại diện từ API */}
       <section className="container mt-5">
-        <div className="section-heading mb-4">
-          <h5 className="font-weight-bold text-uppercase m-0 d-flex align-items-center">
-            <span className="bg-primary mr-2" style={{ width: '4px', height: '18px', display: 'inline-block' }}></span>
-            Tìm kiếm theo thương hiệu
+        <div className="section-heading mb-4 text-center">
+          <h5 className="font-weight-bold text-uppercase m-0 d-inline-flex align-items-center">
+            <span className="bg-primary mr-2" style={{ width: '4px', height: '22px', display: 'inline-block' }}></span>
+            <i className="fa-solid fa-grid-2 text-primary mr-2"></i>
+            Danh mục thương hiệu
           </h5>
+          <p className="text-muted small mt-2 mb-0">Chọn thương hiệu yêu thích để khám phá sản phẩm</p>
         </div>
-        <div className="row">
+        <div className="d-flex flex-wrap justify-content-center gap-4">
           {categories.map((cat) => (
-            <div className="col-md-3 col-6 mb-3" key={cat.id} onClick={() => selectBrand(cat.id)}>
-              <div className="category-badge-item">
-                <div className="category-badge-icon">
-                  {cat.name.toLowerCase() === 'apple' && <i className="fa-brands fa-apple"></i>}
-                  {cat.name.toLowerCase() === 'samsung' && <i className="fa-solid fa-mobile-screen"></i>}
-                  {cat.name.toLowerCase() === 'xiaomi' && <i className="fa-solid fa-bolt"></i>}
-                  {cat.name.toLowerCase() === 'oppo' && <i className="fa-solid fa-camera-retro"></i>}
-                </div>
-                <h6 className="font-weight-bold text-dark mb-1">{cat.name}</h6>
-                <span className="text-muted small">Xem các sản phẩm</span>
+            <div 
+              key={cat.id} 
+              className="text-center" 
+              onClick={() => selectBrand(cat.id)}
+              style={{ cursor: 'pointer', width: '140px' }}
+            >
+              {/* Khối tròn chứa ảnh đại diện */}
+              <div 
+                className="category-circle-item mx-auto mb-3 d-flex align-items-center justify-content-center overflow-hidden"
+                style={{
+                  width: '100px',
+                  height: '100px',
+                  borderRadius: '50%',
+                  border: '3px solid #e8e8e8',
+                  background: '#fff',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.12)';
+                  e.currentTarget.style.borderColor = 'var(--primary)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 123, 255, 0.25)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.borderColor = '#e8e8e8';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                }}
+              >
+                {cat.imageUrl ? (
+                  <img 
+                    src={getImageUrl(cat.imageUrl)} 
+                    alt={cat.name}
+                    style={{ width: '70%', height: '70%', objectFit: 'contain' }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling && (e.target.nextSibling.style.display = 'flex');
+                    }}
+                  />
+                ) : null}
+                {/* Fallback icon khi chưa có ảnh */}
+                {!cat.imageUrl && (
+                  <i className="fa-solid fa-mobile-screen-button" style={{ fontSize: '32px', color: 'var(--primary)' }}></i>
+                )}
               </div>
+              <h6 className="font-weight-bold text-dark mb-1" style={{ fontSize: '14px' }}>{cat.name}</h6>
+              <span className="badge badge-light border text-muted" style={{ fontSize: '11px' }}>
+                {products.filter(p => p.categoryProductId === cat.id).length} sản phẩm
+              </span>
             </div>
           ))}
         </div>
@@ -271,16 +315,20 @@ function Home({ onAddToCart, onAddToCompare, compareList = [] }) {
         </div>
       </section>
 
-      {/* 4.1. SẢN PHẨM MỚI NHẤT (TIÊU CHÍ 36) */}
+      {/* 4.1. SẢN PHẨM MỚI NHẤT - Dữ liệu từ API /Products/newest (sort theo CreatedDate) */}
       <section className="container mt-5">
-        <div className="section-heading mb-4 border-bottom pb-2">
+        <div className="section-heading mb-4 border-bottom pb-2 d-flex justify-content-between align-items-center">
           <h4 className="font-weight-bold text-uppercase m-0 text-dark">
             <span className="bg-success mr-2" style={{ width: '4px', height: '18px', display: 'inline-block' }}></span>
-            Siêu phẩm mới nhất (Newest Smartphone)
+            <i className="fa-solid fa-sparkles text-success mr-2"></i>
+            Siêu phẩm mới nhất
           </h4>
+          <Link to="/shop" className="btn btn-outline-success btn-sm font-weight-bold" style={{ borderRadius: '20px' }}>
+            Xem tất cả <i className="fa-solid fa-arrow-right ml-1"></i>
+          </Link>
         </div>
         <div className="row">
-          {latestProducts.map((p) => (
+          {newestProducts.map((p) => (
             <div className="col-lg-4 col-md-6 mb-4" key={p.id}>
               <ProductCard 
                 product={p} 
@@ -288,21 +336,31 @@ function Home({ onAddToCart, onAddToCompare, compareList = [] }) {
                 onAddToCompare={onAddToCompare}
                 isCompared={compareList.some(item => item.id === p.id)}
               />
+              <div className="text-center mt-2">
+                <span className="badge badge-success px-3 py-1" style={{ fontSize: '11px' }}>
+                  <i className="fa-solid fa-clock mr-1"></i>
+                  Mới thêm: {new Date(p.createdDate).toLocaleDateString('vi-VN')}
+                </span>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 4.2. SẢN PHẨM BÁN CHẠY (TIÊU CHÍ 37) */}
+      {/* 4.2. SẢN PHẨM BÁN CHẠY - Dữ liệu từ API /Products/bestseller (sort theo SoldQuantity) */}
       <section className="container mt-5">
-        <div className="section-heading mb-4 border-bottom pb-2">
+        <div className="section-heading mb-4 border-bottom pb-2 d-flex justify-content-between align-items-center">
           <h4 className="font-weight-bold text-uppercase m-0 text-dark">
             <span className="bg-danger mr-2" style={{ width: '4px', height: '18px', display: 'inline-block' }}></span>
-            Sản phẩm bán chạy nhất (Top Best Sellers)
+            <i className="fa-solid fa-trophy text-danger mr-2"></i>
+            Sản phẩm bán chạy nhất
           </h4>
+          <Link to="/shop" className="btn btn-outline-danger btn-sm font-weight-bold" style={{ borderRadius: '20px' }}>
+            Xem tất cả <i className="fa-solid fa-arrow-right ml-1"></i>
+          </Link>
         </div>
         <div className="row">
-          {topSellingProducts.map((p) => (
+          {bestSellerProducts.map((p, idx) => (
             <div className="col-lg-4 col-md-6 mb-4" key={p.id}>
               <ProductCard 
                 product={p} 
@@ -310,6 +368,45 @@ function Home({ onAddToCart, onAddToCompare, compareList = [] }) {
                 onAddToCompare={onAddToCompare}
                 isCompared={compareList.some(item => item.id === p.id)}
               />
+              <div className="text-center mt-2">
+                <span className="badge badge-danger px-3 py-1" style={{ fontSize: '11px' }}>
+                  <i className="fa-solid fa-fire mr-1"></i>
+                  Đã bán: {p.soldQuantity || 0} sản phẩm
+                  {idx === 0 && <span className="ml-1">🏆</span>}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 4.3. SẢN PHẨM HOT - Dữ liệu từ API /Products/hot (sort theo ViewCount) */}
+      <section className="container mt-5">
+        <div className="section-heading mb-4 border-bottom pb-2 d-flex justify-content-between align-items-center">
+          <h4 className="font-weight-bold text-uppercase m-0 text-dark">
+            <span className="bg-warning mr-2" style={{ width: '4px', height: '18px', display: 'inline-block' }}></span>
+            <i className="fa-solid fa-eye text-warning mr-2"></i>
+            Sản phẩm được quan tâm nhất
+          </h4>
+          <Link to="/shop" className="btn btn-outline-warning btn-sm font-weight-bold text-dark" style={{ borderRadius: '20px' }}>
+            Xem tất cả <i className="fa-solid fa-arrow-right ml-1"></i>
+          </Link>
+        </div>
+        <div className="row">
+          {hotProducts.map((p) => (
+            <div className="col-lg-4 col-md-6 mb-4" key={p.id}>
+              <ProductCard 
+                product={p} 
+                onAddToCart={onAddToCart}
+                onAddToCompare={onAddToCompare}
+                isCompared={compareList.some(item => item.id === p.id)}
+              />
+              <div className="text-center mt-2">
+                <span className="badge badge-warning text-dark px-3 py-1" style={{ fontSize: '11px' }}>
+                  <i className="fa-solid fa-eye mr-1"></i>
+                  {p.viewCount || 0} lượt xem
+                </span>
+              </div>
             </div>
           ))}
         </div>
